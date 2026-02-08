@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.14
+
+- Fix creazione eventi: formato date/ora compatibile con Zoho + retry su errore formato
+- Errori di creazione ora restituiti correttamente
+
 ## 1.0.13
 
 - Filtra gli eventi solo per i tecnici configurati (ID o nome)

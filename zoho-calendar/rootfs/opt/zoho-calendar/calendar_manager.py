@@ -204,12 +204,15 @@ class CalendarManager:
         if not tecnico_id:
             raise ValueError("ID tecnico mancante: inserisci l'ID del record Zoho per il tecnico")
 
+        start_dt = self._format_datetime(data_str, ora_inizio)
+        end_dt = self._format_datetime(data_str, ora_fine)
+
         event_data = {
             "Titolo": titolo,
             "LkpTecnico": tecnico_id,
             "Data": data_str,
-            "DataInizio": ora_inizio,
-            "DataFine": ora_fine,
+            "DataInizio": start_dt,
+            "DataFine": end_dt,
             "DescrizioneAttivita": descrizione,
             "Tipologia": defaults["tipologia"],
             "OrePianificate": defaults["ore_pianificate"],
@@ -291,6 +294,17 @@ class CalendarManager:
             if tech.get("name") == tecnico_id and tech.get("id"):
                 return tech["id"]
         return ""
+
+    @staticmethod
+    def _format_datetime(date_str, time_str):
+        if not date_str:
+            return ""
+        if not time_str:
+            return date_str
+        t = time_str.strip()
+        if len(t) == 5:
+            t = f"{t}:00"
+        return f"{date_str} {t}"
 
     @staticmethod
     def _get_technician_status(name, events):

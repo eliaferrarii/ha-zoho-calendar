@@ -248,6 +248,26 @@ class ZohoAPI:
                                  json=payload, timeout=15)
             if resp.status_code in (200, 201):
                 result = resp.json()
+                if result.get("code") and result.get("code") != 3000:
+                    if self._has_date_error(result):
+                        retry_payload = {"data": self._convert_date_formats(data)}
+                        if retry_payload["data"] != data:
+                            resp_retry = requests.post(
+                                url, headers=self._headers(), json=retry_payload, timeout=15
+                            )
+                            if resp_retry.status_code in (200, 201):
+                                retry_result = resp_retry.json()
+                                if retry_result.get("code") == 3000:
+                                    logger.info("Evento creato (retry date format): %s", retry_result)
+                                    return retry_result
+                                raise ZohoAPIError(
+                                    f"Errore creazione evento: {retry_result.get('error', retry_result)}",
+                                    status_code=resp_retry.status_code,
+                                )
+                    raise ZohoAPIError(
+                        f"Errore creazione evento: {result.get('error', result)}",
+                        status_code=resp.status_code,
+                    )
                 logger.info("Evento creato: %s", result)
                 return result
             else:
@@ -257,6 +277,42 @@ class ZohoAPI:
                 )
         except requests.RequestException as e:
             raise ZohoAPIError(f"Errore di rete: {e}")
+
+    @staticmethod
+    def _has_date_error(result):
+        err = result.get("error")
+        if isinstance(err, dict):
+            for key in ("Data", "DataInizio", "DataFine"):
+                if key in err:
+                    return True
+        return False
+
+    @staticmethod
+    def _convert_date_formats(data):
+        def parse_any(val):
+            for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%Y-%m-%d"):
+                try:
+                    return datetime.strptime(val, fmt)
+                except ValueError:
+                    continue
+            return None
+
+        def format_dt(dt, has_time):
+            if has_time:
+                return dt.strftime("%d-%b-%Y %H:%M:%S")
+            return dt.strftime("%d-%b-%Y")
+
+        new_data = dict(data)
+        for key in ("Data", "DataInizio", "DataFine"):
+            val = new_data.get(key)
+            if not val:
+                continue
+            dt = parse_any(val)
+            if not dt:
+                continue
+            has_time = " " in val
+            new_data[key] = format_dt(dt, has_time)
+        return new_data
 
     def update_event(self, record_id, data):
         """Aggiorna un evento esistente."""
