@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.6
+
+- Rimosso `CMD ["/init"]` per evitare doppio avvio di s6 (PID 1)
+
 ## 1.0.5
 
 - Disabilitato `init` di Docker per evitare conflitto con s6-overlay (PID 1)

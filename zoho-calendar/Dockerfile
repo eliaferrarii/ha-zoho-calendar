@@ -19,5 +19,3 @@ WORKDIR /opt/zoho-calendar
 
 # Make s6 service run script executable
 RUN chmod a+x /etc/services.d/zoho-calendar/run
-
-CMD ["/init"]
