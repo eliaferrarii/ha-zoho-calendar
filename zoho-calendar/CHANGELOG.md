@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.16
+
+- Formato date/ora per Zoho Creator corretto: `DD/MM/YYYY` e `DD/MM/YYYY HH:MM`
+
 ## 1.0.15
 
 - Date/ora create in formato Zoho (DD-MMM-YYYY) per evitare errori "Enter a valid date format"

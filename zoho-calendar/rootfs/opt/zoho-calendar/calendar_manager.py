@@ -311,7 +311,7 @@ class CalendarManager:
     def _format_date_zoho(date_str):
         try:
             dt = datetime.strptime(date_str, "%Y-%m-%d")
-            return dt.strftime("%d-%b-%Y")
+            return dt.strftime("%d/%m/%Y")
         except ValueError:
             return date_str
 
@@ -319,10 +319,10 @@ class CalendarManager:
     def _format_datetime_zoho(date_str, time_str):
         try:
             t = time_str.strip() if time_str else "00:00"
-            if len(t) == 5:
-                t = f"{t}:00"
-            dt = datetime.strptime(f"{date_str} {t}", "%Y-%m-%d %H:%M:%S")
-            return dt.strftime("%d-%b-%Y %H:%M:%S")
+            if len(t) == 8 and t.endswith(":00"):
+                t = t[:-3]
+            dt = datetime.strptime(f"{date_str} {t}", "%Y-%m-%d %H:%M")
+            return dt.strftime("%d/%m/%Y %H:%M")
         except ValueError:
             return CalendarManager._format_datetime(date_str, time_str)
 
