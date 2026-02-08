@@ -17,8 +17,7 @@ RUN pip3 install --no-cache-dir -r /opt/zoho-calendar/requirements.txt
 # Set working directory
 WORKDIR /opt/zoho-calendar
 
-# Make run script executable
-RUN chmod a+x /opt/zoho-calendar/run.sh \
-    && chmod a+x /etc/services.d/zoho-calendar/run
+# Make s6 service run script executable
+RUN chmod a+x /etc/services.d/zoho-calendar/run
 
 CMD ["/init"]

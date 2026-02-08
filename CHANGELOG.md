@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2
+
+- Fix avvio: usa s6 (`/init`) e servizio dedicato per evitare errore `s6-overlay-suexec: fatal: can only run as pid 1`
+- Logica di startup spostata nel servizio s6 (rimosso `run.sh`)
+
 ## 1.0.0
 
 - Prima release
