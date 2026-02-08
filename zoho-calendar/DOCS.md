@@ -69,6 +69,9 @@ POST /api/events
 
 ## Campi Zoho Creator
 
+Nota: i campi possono variare in base alla tua app Zoho Creator. Gli esempi sotto
+sono basati su un'implementazione reale e vanno adattati alla tua struttura.
+
 Il report `CalendarioPianificazione` espone i seguenti campi:
 
 | Campo | Descrizione |
@@ -82,7 +85,7 @@ Il report `CalendarioPianificazione` espone i seguenti campi:
 | `DataFine` | Ora fine (HH:MM) |
 | `Tipologia` | Tipo attivita |
 | `OrePianificate` | Ore pianificate |
-| `LkpAttivitaInterna` | **Obbligatorio**: riferimento attivita interna |
+| `LkpAttivitaInterna` | Riferimento attivita interna (campo personalizzato, opzionale) |
 | `Reparto` | Reparto |
 
 ## Risoluzione problemi

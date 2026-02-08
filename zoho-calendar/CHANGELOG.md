@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.10
+
+- Documentazione resa piu generica (campi Zoho personalizzati come esempio)
+- ID Attivita Interna tornato opzionale in UI
+
 ## 1.0.9
 
 - Documentazione installazione e OAuth aggiornata (redirect URI + flusso corretto)
