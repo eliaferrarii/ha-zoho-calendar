@@ -96,6 +96,7 @@ def api_auth_url():
     """Restituisce URL di consenso Zoho per aprire in nuova tab."""
     client_id = request.args.get("client_id") or config_mgr.get("zoho_client_id", "")
     dc = request.args.get("dc") or config_mgr.get("zoho_dc", "eu")
+    redirect_uri = os.environ.get("ZOHO_REDIRECT_URI", "http://localhost:3000/auth/callback")
 
     if not client_id:
         return jsonify({"error": "Client ID non configurato"}), 400
@@ -107,7 +108,7 @@ def api_auth_url():
         f"&client_id={client_id}"
         f"&response_type=code"
         f"&access_type=offline"
-        f"&redirect_uri=https://www.zoho.com"
+        f"&redirect_uri={redirect_uri}"
         f"&prompt=consent"
     )
     return jsonify({"url": auth_url})
@@ -134,7 +135,8 @@ def api_auth_exchange():
             "client_id": client_id,
             "client_secret": client_secret,
         })
-        refresh_token = zoho.exchange_code(code)
+        redirect_uri = os.environ.get("ZOHO_REDIRECT_URI", "http://localhost:3000/auth/callback")
+        refresh_token = zoho.exchange_code(code, redirect_uri=redirect_uri)
 
         # Salva il refresh token nella config
         config_mgr.set("zoho_refresh_token", refresh_token)

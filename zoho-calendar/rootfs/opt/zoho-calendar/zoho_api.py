@@ -143,12 +143,14 @@ class ZohoAPI:
     # OAuth code exchange
     # ------------------------------------------------------------------
 
-    def exchange_code(self, code, redirect_uri="https://www.zoho.com"):
+    def exchange_code(self, code, redirect_uri=None):
         """Scambia il codice di autorizzazione per un refresh token.
 
         Chiama accounts.zoho.eu/oauth/v2/token con grant_type=authorization_code
         e restituisce il refresh_token.
         """
+        if not redirect_uri:
+            redirect_uri = os.environ.get("ZOHO_REDIRECT_URI", "http://localhost:3000/auth/callback")
         logger.info("Scambio codice autorizzazione...")
         try:
             resp = requests.post(self._accounts_url, data={

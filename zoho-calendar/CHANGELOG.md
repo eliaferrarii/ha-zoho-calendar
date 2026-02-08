@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.7
+
+- Redirect URI OAuth aggiornato a `http://localhost:3000/auth/callback` (configurabile via `ZOHO_REDIRECT_URI`)
+
 ## 1.0.6
 
 - Rimosso `CMD ["/init"]` per evitare doppio avvio di s6 (PID 1)
