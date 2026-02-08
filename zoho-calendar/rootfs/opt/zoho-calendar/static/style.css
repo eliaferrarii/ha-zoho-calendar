@@ -55,7 +55,8 @@ header h1 {
     display: flex;
     align-items: center;
     gap: 8px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    overflow-x: auto;
 }
 
 .header-controls input[type="date"] {

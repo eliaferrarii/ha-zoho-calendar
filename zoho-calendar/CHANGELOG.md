@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.12
+
+- Controlli calendario forzati su una riga (no wrap)
+
 ## 1.0.11
 
 - Gestione ID tecnico: campo in UI + validazione prima di creare eventi
