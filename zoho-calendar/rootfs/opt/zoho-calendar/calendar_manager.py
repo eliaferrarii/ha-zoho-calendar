@@ -210,9 +210,10 @@ class CalendarManager:
         event_data = {
             "Titolo": titolo,
             "LkpTecnico": tecnico_id,
-            "Data": data_str,
-            "DataInizio": start_dt,
-            "DataFine": end_dt,
+            # Format per Creator (date/time)
+            "Data": self._format_date_zoho(data_str),
+            "DataInizio": self._format_datetime_zoho(data_str, ora_inizio),
+            "DataFine": self._format_datetime_zoho(data_str, ora_fine),
             "DescrizioneAttivita": descrizione,
             "Tipologia": defaults["tipologia"],
             "OrePianificate": defaults["ore_pianificate"],
@@ -305,6 +306,25 @@ class CalendarManager:
         if len(t) == 5:
             t = f"{t}:00"
         return f"{date_str} {t}"
+
+    @staticmethod
+    def _format_date_zoho(date_str):
+        try:
+            dt = datetime.strptime(date_str, "%Y-%m-%d")
+            return dt.strftime("%d-%b-%Y")
+        except ValueError:
+            return date_str
+
+    @staticmethod
+    def _format_datetime_zoho(date_str, time_str):
+        try:
+            t = time_str.strip() if time_str else "00:00"
+            if len(t) == 5:
+                t = f"{t}:00"
+            dt = datetime.strptime(f"{date_str} {t}", "%Y-%m-%d %H:%M:%S")
+            return dt.strftime("%d-%b-%Y %H:%M:%S")
+        except ValueError:
+            return CalendarManager._format_datetime(date_str, time_str)
 
     @staticmethod
     def _get_technician_status(name, events):

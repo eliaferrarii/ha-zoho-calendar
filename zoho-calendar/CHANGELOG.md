@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.15
+
+- Date/ora create in formato Zoho (DD-MMM-YYYY) per evitare errori "Enter a valid date format"
+
 ## 1.0.14
 
 - Fix creazione eventi: formato date/ora compatibile con Zoho + retry su errore formato
