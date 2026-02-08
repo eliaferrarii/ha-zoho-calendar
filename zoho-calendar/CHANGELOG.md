@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.4
+
+- Pulita struttura `rootfs/` (rimossi file duplicati e directory annidate)
+
 ## 1.0.3
 
 - Repo reso valido per Home Assistant Add-on Store: add-on spostato in `zoho-calendar/`
