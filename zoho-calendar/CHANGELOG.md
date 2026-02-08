@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.17
+
+- Aggiunta custom integration (sensori senza MQTT)
+- API /api/config/status include update_interval per sincronizzare la frequenza
+
 ## 1.0.16
 
 - Formato date/ora per Zoho Creator corretto: `DD/MM/YYYY` e `DD/MM/YYYY HH:MM`

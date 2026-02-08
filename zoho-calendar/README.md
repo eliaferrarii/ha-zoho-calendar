@@ -18,6 +18,16 @@ Integrazione del calendario di Zoho Service Management (Zoho Creator) con Home A
 4. Avvia l'add-on
 5. Apri l'interfaccia Ingress dell'add-on e completa la configurazione guidata
 
+## Sensori senza MQTT (custom integration)
+
+Per avere sensori nativi senza MQTT:
+
+1. Copia la cartella `custom_components/zoho_calendar` in `config/custom_components/zoho_calendar` di Home Assistant
+2. Riavvia Home Assistant
+3. Aggiungi l'integrazione **Zoho Calendar Add-on**
+4. Imposta il **Base URL** dell'add-on (default: `http://addon_zoho-calendar:8099`)
+5. Imposta l'intervallo di aggiornamento dall'add-on (opzione "usa intervallo add-on")
+
 ## Configurazione
 
 | Parametro | Descrizione | Default |

@@ -58,6 +58,7 @@ def api_config_status():
     """Restituisce se l'add-on e' configurato o no."""
     return jsonify({
         "configured": config_mgr.is_configured(),
+        "update_interval": int(os.environ.get("UPDATE_INTERVAL", "60")),
     })
 
 

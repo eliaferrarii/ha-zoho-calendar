@@ -1,0 +1,10 @@
+{
+  "domain": "zoho_calendar",
+  "name": "Zoho Calendar Add-on",
+  "version": "0.1.0",
+  "documentation": "https://github.com/eliaferrarii/ha-zoho-calendar",
+  "requirements": [],
+  "codeowners": [],
+  "config_flow": true,
+  "iot_class": "local_polling"
+}
