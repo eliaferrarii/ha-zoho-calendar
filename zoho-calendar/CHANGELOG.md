@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.3
+
+- Repo reso valido per Home Assistant Add-on Store: add-on spostato in `zoho-calendar/`
+- Aggiornato shebang del servizio s6 a `/command/with-contenv`
+
 ## 1.0.2
 
 - Fix avvio: usa s6 (`/init`) e servizio dedicato per evitare errore `s6-overlay-suexec: fatal: can only run as pid 1`
