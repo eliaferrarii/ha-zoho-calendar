@@ -9,6 +9,7 @@ import logging
 import os
 import re
 import time
+import unicodedata
 from datetime import datetime
 
 import paho.mqtt.client as mqtt
@@ -18,12 +19,8 @@ logger = logging.getLogger(__name__)
 
 def _slugify(text):
     """Converte un nome in slug HA-compatibile."""
+    text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode("ascii")
     text = text.lower().strip()
-    text = re.sub(r"[àáâãä]", "a", text)
-    text = re.sub(r"[èéêë]", "e", text)
-    text = re.sub(r"[ìíîï]", "i", text)
-    text = re.sub(r"[òóôõö]", "o", text)
-    text = re.sub(r"[ùúûü]", "u", text)
     text = re.sub(r"[^a-z0-9]+", "_", text)
     return text.strip("_")
 
@@ -87,6 +84,10 @@ class MQTTManager:
         self._connected = False
         if rc != 0:
             logger.warning("Disconnessione MQTT inattesa (rc=%d)", rc)
+    
+    def refresh_discovery(self):
+        if self._connected:
+            self._publish_discovery()
 
     # ------------------------------------------------------------------
     # MQTT Discovery
@@ -298,11 +299,16 @@ class MQTTManager:
 
     @staticmethod
     def _parse_time(time_str):
-        """Converte orario HH:MM o HH:MM:SS in datetime di oggi."""
+        """Converte orario in datetime di oggi (supporta valori con data)."""
         if not time_str:
             return datetime.min
         try:
-            parts = time_str.split(":")
+            t = time_str.strip()
+            if "T" in t:
+                t = t.split("T", 1)[1]
+            if " " in t:
+                t = t.split(" ", 1)[1]
+            parts = t.split(":")
             h = int(parts[0])
             m = int(parts[1]) if len(parts) > 1 else 0
             now = datetime.now()
@@ -317,6 +323,6 @@ class MQTTManager:
             return "ferie"
         if "malattia" in title_lower:
             return "malattia"
-        if "reperibilità" in title_lower:
+        if "reperibilit" in title_lower:
             return "reperibilita"
         return "occupato"

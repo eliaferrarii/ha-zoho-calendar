@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.18
+
+- MQTT: slugify robusto per nomi con accenti
+- MQTT: parsing orari compatibile con valori "DD/MM/YYYY HH:MM"
+- MQTT: refresh discovery dopo modifiche ai tecnici
+
 ## 1.0.17
 
 - Aggiunta custom integration (sensori senza MQTT)

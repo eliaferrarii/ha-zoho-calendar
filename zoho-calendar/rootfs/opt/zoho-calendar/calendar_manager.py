@@ -77,6 +77,7 @@ class CalendarManager:
         # Aggiorna tecnici
         self.technicians = self.config_manager.get_technicians()
         self.mqtt.technicians = self.technicians
+        self.mqtt.refresh_discovery()
 
         # Connetti MQTT se non gia' connesso
         if not self.mqtt._connected:
