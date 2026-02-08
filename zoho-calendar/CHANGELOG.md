@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.13
+
+- Filtra gli eventi solo per i tecnici configurati (ID o nome)
+
 ## 1.0.12
 
 - Controlli calendario forzati su una riga (no wrap)

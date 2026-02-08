@@ -126,12 +126,7 @@ class CalendarManager:
         try:
             raw_events = self.zoho.get_today_events()
 
-            # Filtra utenti esclusi
-            events = [
-                e for e in raw_events
-                if e.get("LkpTecnico", {}).get("Nominativo", "")
-                not in EXCLUDED_USERS
-            ]
+            events = self._filter_events(raw_events)
 
             self._events = events
             self._last_sync = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -171,11 +166,7 @@ class CalendarManager:
         # Per date diverse, richiedi a Zoho
         try:
             raw = self.zoho.get_events_by_date(target_date)
-            filtered = [
-                e for e in raw
-                if e.get("LkpTecnico", {}).get("Nominativo", "")
-                not in EXCLUDED_USERS
-            ]
+            filtered = self._filter_events(raw)
             return self._transform_events(filtered)
         except ZohoAPIError as e:
             logger.error("Errore lettura eventi: %s", e)
@@ -267,6 +258,26 @@ class CalendarManager:
                 "department": ev.get("Reparto", ""),
             })
         return transformed
+
+    def _filter_events(self, raw_events):
+        """Filtra eventi per tecnici configurati (id o nome) ed esclude utenti noti."""
+        allowed_ids = {t.get("id") for t in self.technicians if t.get("id")}
+        allowed_names = {t.get("name") for t in self.technicians if t.get("name")}
+        filtered = []
+        for ev in raw_events:
+            tech = ev.get("LkpTecnico", {}) or {}
+            name = tech.get("Nominativo", "")
+            tech_id = tech.get("ID", "") or tech.get("id", "")
+            if name in EXCLUDED_USERS:
+                continue
+            if allowed_ids:
+                if tech_id in allowed_ids:
+                    filtered.append(ev)
+                continue
+            if allowed_names:
+                if name in allowed_names:
+                    filtered.append(ev)
+        return filtered
 
     def _resolve_technician_id(self, tecnico_id):
         """Risolve l'ID tecnico se e' stato passato il nome."""
