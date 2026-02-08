@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoho Calendario</title>
+    <link rel="stylesheet" href="{{ ingress_entry }}/static/style.css">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                Zoho Calendario
+            </h1>
+            <div class="header-controls">
+                <!-- Controlli calendario (nascosti in setup) -->
+                <div id="calendar-controls">
+                    <input type="date" id="date-picker" title="Seleziona data">
+                    <button id="today-btn" title="Vai ad oggi">Oggi</button>
+                    <button id="refresh-btn" title="Sincronizza">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                            <path d="M21 3v5h-5"/>
+                            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                            <path d="M3 21v-5h5"/>
+                        </svg>
+                    </button>
+                    <button id="add-event-btn" title="Nuovo Evento">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        Nuovo
+                    </button>
+                    <span id="last-sync" class="last-sync" title="Ultimo aggiornamento"></span>
+                </div>
+                <!-- Pulsante Impostazioni (visibile quando configurato) -->
+                <button id="settings-btn" class="btn-settings hidden" title="Impostazioni" onclick="showSetup()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                    </svg>
+                    Impostazioni
+                </button>
+            </div>
+        </header>
+
+        <main>
+            <!-- Loading -->
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p>Caricamento...</p>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- SETUP WIZARD -->
+            <!-- ============================================================ -->
+            <div id="setup-container" class="setup-container hidden">
+                <div class="setup-wizard">
+                    <h2>Configurazione Zoho Calendar</h2>
+                    <p class="setup-subtitle">Configura l'add-on per connettersi al tuo account Zoho Creator</p>
+
+                    <!-- Steps indicator -->
+                    <div class="setup-steps">
+                        <div class="step-indicator active" data-step="1" onclick="goToStep(1)">
+                            <span class="step-num">1</span> Credenziali
+                        </div>
+                        <div class="step-indicator" data-step="2" onclick="goToStep(2)">
+                            <span class="step-num">2</span> Autorizzazione
+                        </div>
+                        <div class="step-indicator" data-step="3" onclick="goToStep(3)">
+                            <span class="step-num">3</span> Tecnici
+                        </div>
+                        <div class="step-indicator" data-step="4" onclick="goToStep(4)">
+                            <span class="step-num">4</span> Impostazioni
+                        </div>
+                    </div>
+
+                    <!-- Alert area -->
+                    <div id="setup-alert" class="hidden"></div>
+
+                    <!-- Step 1: Credenziali -->
+                    <div id="step-1" class="setup-step">
+                        <h3>Credenziali Zoho API</h3>
+                        <p class="step-desc">Inserisci le credenziali della tua applicazione Zoho (Self Client o Server-based).</p>
+                        <div class="form-group">
+                            <label for="cfg-client-id">Client ID</label>
+                            <input type="text" id="cfg-client-id" placeholder="1000.XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX">
+                        </div>
+                        <div class="form-group">
+                            <label for="cfg-client-secret">Client Secret</label>
+                            <input type="password" id="cfg-client-secret" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="cfg-dc">Data Center</label>
+                                <input type="text" id="cfg-dc" value="eu" placeholder="eu">
+                            </div>
+                            <div class="form-group">
+                                <label for="cfg-owner">Owner</label>
+                                <input type="text" id="cfg-owner" value="emironet" placeholder="emironet">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="cfg-app">App Name</label>
+                                <input type="text" id="cfg-app" value="service-management" placeholder="service-management">
+                            </div>
+                            <div class="form-group">
+                                <label for="cfg-form">Form Name</label>
+                                <input type="text" id="cfg-form" value="Pianificazione" placeholder="Pianificazione">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="cfg-report">Report Name</label>
+                            <input type="text" id="cfg-report" value="CalendarioPianificazione" placeholder="CalendarioPianificazione">
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn-primary" onclick="saveCredentials()">Salva e continua</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Autorizzazione -->
+                    <div id="step-2" class="setup-step hidden">
+                        <h3>Autorizzazione OAuth</h3>
+                        <p class="step-desc">
+                            Clicca "Autorizza con Zoho" per aprire la pagina di consenso.
+                            Dopo aver autorizzato, copia il codice dalla URL e incollalo qui sotto.
+                        </p>
+                        <div id="auth-status"></div>
+                        <div style="margin-bottom: 14px;">
+                            <button type="button" class="btn-auth" onclick="openAuthUrl()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                    <polyline points="15 3 21 3 21 9"/>
+                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                                Autorizza con Zoho
+                            </button>
+                        </div>
+                        <div class="auth-actions">
+                            <div class="form-group">
+                                <label for="cfg-auth-code">Codice di autorizzazione</label>
+                                <input type="text" id="cfg-auth-code" placeholder="1000.xxxxxxxx.xxxxxxxx">
+                            </div>
+                            <button type="button" class="btn-exchange" onclick="exchangeCode()" id="btn-exchange">
+                                Scambia codice
+                            </button>
+                        </div>
+                        <div class="form-actions" style="margin-top: 14px;">
+                            <button type="button" class="btn-secondary" onclick="goToStep(1)">Indietro</button>
+                            <button type="button" class="btn-primary" onclick="goToStep(3)" id="btn-skip-auth">Avanti</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Tecnici -->
+                    <div id="step-3" class="setup-step hidden">
+                        <h3>Lista Tecnici</h3>
+                        <p class="step-desc">Gestisci la lista dei tecnici da monitorare nel calendario.</p>
+                        <ul class="tech-list" id="tech-list"></ul>
+                        <button type="button" class="btn-add-tech" onclick="addTechnician()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            Aggiungi tecnico
+                        </button>
+                        <div class="form-actions">
+                            <button type="button" class="btn-secondary" onclick="goToStep(2)">Indietro</button>
+                            <button type="button" class="btn-primary" onclick="saveTechnicians()">Salva e continua</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Impostazioni -->
+                    <div id="step-4" class="setup-step hidden">
+                        <h3>Impostazioni Generali</h3>
+                        <p class="step-desc">Configura i valori predefiniti per la creazione degli eventi.</p>
+                        <div class="form-group">
+                            <label for="cfg-tipologia">Tipologia default</label>
+                            <input type="text" id="cfg-tipologia" value="Altre attivit&agrave;" placeholder="Altre attivit&agrave;">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="cfg-ore">Ore pianificate</label>
+                                <input type="text" id="cfg-ore" value="8" placeholder="8">
+                            </div>
+                            <div class="form-group">
+                                <label for="cfg-reparto">Reparto</label>
+                                <input type="text" id="cfg-reparto" placeholder="Reparto">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="cfg-attivita-id">ID Attivita Interna (opzionale)</label>
+                            <input type="text" id="cfg-attivita-id" placeholder="">
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn-secondary" onclick="goToStep(3)">Indietro</button>
+                            <button type="button" class="btn-save-config" onclick="saveSettings()">Salva configurazione</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- CALENDARIO (mostrato solo se configurato) -->
+            <!-- ============================================================ -->
+
+            <!-- Error -->
+            <div id="error" class="state-msg hidden">
+                <p id="error-msg">Errore nel caricamento.</p>
+                <button onclick="loadEvents()">Riprova</button>
+            </div>
+
+            <!-- Timeline -->
+            <div id="timeline-container" class="timeline-container hidden">
+                <div class="timeline-header">
+                    <div class="name-column">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        Tecnici
+                    </div>
+                    <div class="time-slots" id="time-slots"></div>
+                </div>
+                <div id="timeline-body" class="timeline-body"></div>
+            </div>
+        </main>
+
+        <!-- Modale Nuovo Evento -->
+        <div id="event-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modal-title">Nuovo Evento</h2>
+                    <button class="close-btn" onclick="closeModal()">&times;</button>
+                </div>
+                <form id="event-form" onsubmit="submitEvent(event)">
+                    <input type="hidden" id="event-id" value="">
+                    <div class="form-group">
+                        <label for="event-titolo">Titolo</label>
+                        <input type="text" id="event-titolo" required placeholder="Titolo attivita">
+                    </div>
+                    <div class="form-group">
+                        <label for="event-tecnico">Tecnico</label>
+                        <select id="event-tecnico" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="event-data">Data</label>
+                        <input type="date" id="event-data" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="event-inizio">Ora Inizio</label>
+                            <input type="time" id="event-inizio" required value="08:00">
+                        </div>
+                        <div class="form-group">
+                            <label for="event-fine">Ora Fine</label>
+                            <input type="time" id="event-fine" required value="17:00">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="event-descrizione">Descrizione</label>
+                        <textarea id="event-descrizione" rows="3" placeholder="Descrizione attivita..."></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="closeModal()">Annulla</button>
+                        <button type="submit" class="btn-primary">Salva</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+<script>
+const INGRESS = '{{ ingress_entry }}';
+const API = INGRESS + '/api';
+const START_HOUR = 7;
+const END_HOUR = 21;
+const TOTAL_SLOTS = END_HOUR - START_HOUR + 1;
+
+let currentDate = new Date().toISOString().split('T')[0];
+let technicians = [];
+let autoRefreshTimer = null;
+let currentStep = 1;
+let setupTechnicians = [];
+let isConfigured = false;
+
+// ─── Init ────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+    checkConfigStatus();
+});
+
+async function checkConfigStatus() {
+    try {
+        const resp = await fetch(API + '/config/status');
+        const json = await resp.json();
+        isConfigured = json.configured;
+        if (isConfigured) {
+            showCalendar();
+        } else {
+            showSetup();
+        }
+    } catch (e) {
+        console.error('Errore verifica config:', e);
+        showSetup();
+    }
+}
+
+function showCalendar() {
+    isConfigured = true;
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById('setup-container').classList.add('hidden');
+    document.getElementById('calendar-controls').classList.remove('hidden');
+    document.getElementById('settings-btn').classList.remove('hidden');
+
+    document.getElementById('date-picker').value = currentDate;
+    renderTimeSlots();
+    loadTechnicians();
+    loadEvents();
+    startAutoRefresh();
+
+    // Event listeners (solo prima volta)
+    if (!document.getElementById('date-picker')._bound) {
+        document.getElementById('date-picker')._bound = true;
+        document.getElementById('date-picker').addEventListener('change', e => {
+            currentDate = e.target.value;
+            loadEvents();
+        });
+        document.getElementById('today-btn').addEventListener('click', () => {
+            currentDate = new Date().toISOString().split('T')[0];
+            document.getElementById('date-picker').value = currentDate;
+            loadEvents();
+        });
+        document.getElementById('refresh-btn').addEventListener('click', () => {
+            forceSync();
+        });
+        document.getElementById('add-event-btn').addEventListener('click', () => {
+            openNewEventModal();
+        });
+    }
+}
+
+function showSetup() {
+    if (autoRefreshTimer) {
+        clearInterval(autoRefreshTimer);
+        autoRefreshTimer = null;
+    }
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById('timeline-container').classList.add('hidden');
+    document.getElementById('error').classList.add('hidden');
+    document.getElementById('calendar-controls').classList.add('hidden');
+    document.getElementById('setup-container').classList.remove('hidden');
+    if (isConfigured) {
+        document.getElementById('settings-btn').classList.remove('hidden');
+    }
+
+    // Carica config esistente
+    loadConfig();
+}
+
+// ─── Setup: Config loading ───────────────────────────────────────────
+async function loadConfig() {
+    try {
+        const resp = await fetch(API + '/config');
+        const cfg = await resp.json();
+
+        // Popola campi
+        if (cfg.zoho_client_id && !cfg.zoho_client_id.startsWith('*'))
+            document.getElementById('cfg-client-id').value = cfg.zoho_client_id;
+        if (cfg.zoho_client_secret && !cfg.zoho_client_secret.startsWith('*'))
+            document.getElementById('cfg-client-secret').value = cfg.zoho_client_secret;
+        document.getElementById('cfg-dc').value = cfg.zoho_dc || 'eu';
+        document.getElementById('cfg-owner').value = cfg.zoho_owner || 'emironet';
+        document.getElementById('cfg-app').value = cfg.zoho_app || 'service-management';
+        document.getElementById('cfg-form').value = cfg.zoho_form || 'Pianificazione';
+        document.getElementById('cfg-report').value = cfg.zoho_report || 'CalendarioPianificazione';
+        document.getElementById('cfg-tipologia').value = cfg.tipologia || 'Altre attivit\u00e0';
+        document.getElementById('cfg-ore').value = cfg.ore_pianificate || '8';
+        document.getElementById('cfg-reparto').value = cfg.reparto || '';
+        document.getElementById('cfg-attivita-id').value = cfg.attivita_interna_id || '';
+
+        // Tecnici
+        setupTechnicians = cfg.technicians || [];
+        renderTechList();
+
+        // Auth status
+        updateAuthStatus(cfg.configured);
+    } catch (e) {
+        console.error('Errore caricamento config:', e);
+    }
+}
+
+function updateAuthStatus(configured) {
+    const statusEl = document.getElementById('auth-status');
+    if (configured) {
+        statusEl.innerHTML = '<div class="alert alert-success">Refresh token presente - autorizzazione completata</div>';
+    } else {
+        statusEl.innerHTML = '<div class="alert alert-info">Autorizzazione necessaria per completare la configurazione</div>';
+    }
+}
+
+// ─── Setup: Steps navigation ────────────────────────────────────────
+function goToStep(step) {
+    currentStep = step;
+    for (let i = 1; i <= 4; i++) {
+        document.getElementById('step-' + i).classList.toggle('hidden', i !== step);
+        const indicator = document.querySelector('.step-indicator[data-step="' + i + '"]');
+        indicator.classList.toggle('active', i === step);
+    }
+}
+
+// ─── Setup: Step 1 - Credenziali ────────────────────────────────────
+async function saveCredentials() {
+    const clientId = document.getElementById('cfg-client-id').value.trim();
+    const clientSecret = document.getElementById('cfg-client-secret').value.trim();
+
+    if (!clientId || !clientSecret) {
+        showSetupAlert('Inserisci Client ID e Client Secret', 'error');
+        return;
+    }
+
+    try {
+        const resp = await fetch(API + '/config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                zoho_client_id: clientId,
+                zoho_client_secret: clientSecret,
+                zoho_dc: document.getElementById('cfg-dc').value.trim() || 'eu',
+                zoho_owner: document.getElementById('cfg-owner').value.trim() || 'emironet',
+                zoho_app: document.getElementById('cfg-app').value.trim() || 'service-management',
+                zoho_form: document.getElementById('cfg-form').value.trim() || 'Pianificazione',
+                zoho_report: document.getElementById('cfg-report').value.trim() || 'CalendarioPianificazione',
+            }),
+        });
+        const json = await resp.json();
+        if (json.ok) {
+            showSetupAlert('Credenziali salvate', 'success');
+            markStepCompleted(1);
+            goToStep(2);
+        } else {
+            showSetupAlert('Errore: ' + (json.error || 'sconosciuto'), 'error');
+        }
+    } catch (e) {
+        showSetupAlert('Errore di rete: ' + e.message, 'error');
+    }
+}
+
+// ─── Setup: Step 2 - Autorizzazione ─────────────────────────────────
+async function openAuthUrl() {
+    try {
+        const clientId = document.getElementById('cfg-client-id').value.trim();
+        const dc = document.getElementById('cfg-dc').value.trim() || 'eu';
+        const resp = await fetch(API + '/auth/url?client_id=' + encodeURIComponent(clientId) + '&dc=' + encodeURIComponent(dc));
+        const json = await resp.json();
+        if (json.url) {
+            window.open(json.url, '_blank');
+        } else {
+            showSetupAlert('Errore: ' + (json.error || 'URL non disponibile'), 'error');
+        }
+    } catch (e) {
+        showSetupAlert('Errore: ' + e.message, 'error');
+    }
+}
+
+async function exchangeCode() {
+    const code = document.getElementById('cfg-auth-code').value.trim();
+    if (!code) {
+        showSetupAlert('Inserisci il codice di autorizzazione', 'error');
+        return;
+    }
+
+    const btn = document.getElementById('btn-exchange');
+    btn.disabled = true;
+    btn.textContent = 'Scambio in corso...';
+
+    try {
+        const resp = await fetch(API + '/auth/exchange', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code }),
+        });
+        const json = await resp.json();
+        if (json.ok) {
+            showSetupAlert('Autorizzazione completata! Refresh token salvato.', 'success');
+            updateAuthStatus(true);
+            markStepCompleted(2);
+            setTimeout(() => goToStep(3), 1000);
+        } else {
+            showSetupAlert('Errore: ' + (json.error || 'sconosciuto'), 'error');
+        }
+    } catch (e) {
+        showSetupAlert('Errore di rete: ' + e.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Scambia codice';
+    }
+}
+
+// ─── Setup: Step 3 - Tecnici ────────────────────────────────────────
+function renderTechList() {
+    const list = document.getElementById('tech-list');
+    list.innerHTML = '';
+    setupTechnicians.forEach((tech, i) => {
+        const li = document.createElement('li');
+        li.className = 'tech-item';
+        li.innerHTML =
+            '<input type="text" value="' + escapeHtml(tech.name) + '" ' +
+            'onchange="updateTechName(' + i + ', this.value)" placeholder="Nome tecnico">' +
+            '<button type="button" class="btn-remove" onclick="removeTechnician(' + i + ')" title="Rimuovi">&times;</button>';
+        list.appendChild(li);
+    });
+}
+
+function addTechnician() {
+    setupTechnicians.push({ id: '', name: '' });
+    renderTechList();
+    // Focus sull'ultimo input
+    const inputs = document.querySelectorAll('.tech-item input');
+    if (inputs.length) inputs[inputs.length - 1].focus();
+}
+
+function removeTechnician(index) {
+    setupTechnicians.splice(index, 1);
+    renderTechList();
+}
+
+function updateTechName(index, value) {
+    setupTechnicians[index].name = value;
+}
+
+async function saveTechnicians() {
+    // Filtra tecnici vuoti
+    const techs = setupTechnicians.filter(t => t.name.trim());
+    setupTechnicians = techs;
+    renderTechList();
+
+    try {
+        const resp = await fetch(API + '/config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ technicians: techs }),
+        });
+        const json = await resp.json();
+        if (json.ok) {
+            showSetupAlert('Lista tecnici salvata', 'success');
+            markStepCompleted(3);
+            goToStep(4);
+        } else {
+            showSetupAlert('Errore: ' + (json.error || 'sconosciuto'), 'error');
+        }
+    } catch (e) {
+        showSetupAlert('Errore di rete: ' + e.message, 'error');
+    }
+}
+
+// ─── Setup: Step 4 - Impostazioni ───────────────────────────────────
+async function saveSettings() {
+    try {
+        const resp = await fetch(API + '/config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                tipologia: document.getElementById('cfg-tipologia').value.trim(),
+                ore_pianificate: document.getElementById('cfg-ore').value.trim(),
+                reparto: document.getElementById('cfg-reparto').value.trim(),
+                attivita_interna_id: document.getElementById('cfg-attivita-id').value.trim(),
+            }),
+        });
+        const json = await resp.json();
+        if (json.ok) {
+            showSetupAlert('Configurazione salvata!', 'success');
+            markStepCompleted(4);
+            // Verifica se completamente configurato
+            const status = await fetch(API + '/config/status');
+            const statusJson = await status.json();
+            if (statusJson.configured) {
+                isConfigured = true;
+                setTimeout(() => showCalendar(), 1000);
+            } else {
+                showSetupAlert('Impostazioni salvate. Completa l\'autorizzazione (Step 2) per attivare il calendario.', 'info');
+            }
+        } else {
+            showSetupAlert('Errore: ' + (json.error || 'sconosciuto'), 'error');
+        }
+    } catch (e) {
+        showSetupAlert('Errore di rete: ' + e.message, 'error');
+    }
+}
+
+// ─── Setup: Helpers ─────────────────────────────────────────────────
+function showSetupAlert(msg, type) {
+    const el = document.getElementById('setup-alert');
+    el.className = 'alert alert-' + type;
+    el.textContent = msg;
+    el.classList.remove('hidden');
+    setTimeout(() => el.classList.add('hidden'), 5000);
+}
+
+function markStepCompleted(step) {
+    const indicator = document.querySelector('.step-indicator[data-step="' + step + '"]');
+    indicator.classList.add('completed');
+}
+
+// ─── Auto-refresh ────────────────────────────────────────────────────
+function startAutoRefresh() {
+    if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+    autoRefreshTimer = setInterval(() => loadEvents(true), 30000);
+}
+
+// ─── API calls ───────────────────────────────────────────────────────
+async function loadTechnicians() {
+    try {
+        const resp = await fetch(API + '/technicians');
+        const json = await resp.json();
+        technicians = json.data || [];
+        populateTechnicianSelect();
+    } catch (e) {
+        console.error('Errore caricamento tecnici:', e);
+    }
+}
+
+async function loadEvents(silent) {
+    if (!silent) showLoading();
+    try {
+        const url = currentDate === new Date().toISOString().split('T')[0]
+            ? API + '/events'
+            : API + '/events/' + currentDate;
+        const resp = await fetch(url);
+        const json = await resp.json();
+        const events = json.data || [];
+        if (json.last_sync) {
+            document.getElementById('last-sync').textContent = 'Sync: ' + json.last_sync;
+        }
+        renderTimeline(events);
+        showTimeline();
+    } catch (e) {
+        console.error('Errore caricamento eventi:', e);
+        if (!silent) showError('Errore nel caricamento degli eventi: ' + e.message);
+    }
+}
+
+async function forceSync() {
+    const btn = document.getElementById('refresh-btn');
+    btn.disabled = true;
+    try {
+        await fetch(API + '/sync', { method: 'POST' });
+        await loadEvents();
+    } catch (e) {
+        console.error('Errore sync:', e);
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+async function submitEvent(e) {
+    e.preventDefault();
+    const eventId = document.getElementById('event-id').value;
+    const body = {
+        titolo: document.getElementById('event-titolo').value,
+        tecnico_id: document.getElementById('event-tecnico').value,
+        data: document.getElementById('event-data').value,
+        ora_inizio: document.getElementById('event-inizio').value,
+        ora_fine: document.getElementById('event-fine').value,
+        descrizione: document.getElementById('event-descrizione').value,
+    };
+    try {
+        let resp;
+        if (eventId) {
+            resp = await fetch(API + '/events/' + eventId, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+            });
+        } else {
+            resp = await fetch(API + '/events', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+            });
+        }
+        const json = await resp.json();
+        if (json.ok) {
+            closeModal();
+            loadEvents();
+        } else {
+            alert('Errore: ' + (json.error || 'sconosciuto'));
+        }
+    } catch (err) {
+        alert('Errore di rete: ' + err.message);
+    }
+}
+
+async function deleteEvent(recordId) {
+    if (!confirm('Eliminare questo evento?')) return;
+    try {
+        const resp = await fetch(API + '/events/' + recordId, { method: 'DELETE' });
+        const json = await resp.json();
+        if (json.ok) loadEvents();
+        else alert('Errore: ' + (json.error || 'sconosciuto'));
+    } catch (err) {
+        alert('Errore di rete: ' + err.message);
+    }
+}
+
+// ─── Rendering ───────────────────────────────────────────────────────
+function renderTimeSlots() {
+    const container = document.getElementById('time-slots');
+    container.innerHTML = '';
+    for (let h = START_HOUR; h <= END_HOUR; h++) {
+        const slot = document.createElement('div');
+        slot.className = 'time-slot';
+        slot.textContent = h.toString().padStart(2, '0') + ':00';
+        container.appendChild(slot);
+    }
+}
+
+function renderTimeline(events) {
+    const body = document.getElementById('timeline-body');
+    body.innerHTML = '';
+
+    // Raggruppa per tecnico
+    const byTech = {};
+    events.forEach(ev => {
+        const name = ev.technician || 'Sconosciuto';
+        if (!byTech[name]) byTech[name] = [];
+        byTech[name].push(ev);
+    });
+
+    // Ordina tecnici per nome
+    const techNames = Object.keys(byTech).sort();
+
+    if (techNames.length === 0) {
+        body.innerHTML = `
+            <div class="empty-message">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                <div>Nessun evento trovato per questa data</div>
+            </div>`;
+        return;
+    }
+
+    // Calcola altezza righe
+    const container = document.getElementById('timeline-container');
+    const headerH = container.querySelector('.timeline-header').offsetHeight;
+    const availableH = container.offsetHeight - headerH;
+    const rowH = Math.max(60, Math.min(Math.floor(availableH / techNames.length), 150));
+
+    techNames.forEach(name => {
+        const row = document.createElement('div');
+        row.className = 'person-row';
+        row.style.height = rowH + 'px';
+
+        // Nome
+        const nameDiv = document.createElement('div');
+        nameDiv.className = 'person-name';
+        nameDiv.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>' + name + '</span>';
+        row.appendChild(nameDiv);
+
+        // Timeline
+        const timeline = document.createElement('div');
+        timeline.className = 'person-timeline';
+
+        // Celle orarie
+        for (let h = START_HOUR; h <= END_HOUR; h++) {
+            const cell = document.createElement('div');
+            cell.className = 'time-cell';
+            timeline.appendChild(cell);
+        }
+
+        // Eventi
+        addEventsToTimeline(timeline, byTech[name]);
+        row.appendChild(timeline);
+        body.appendChild(row);
+    });
+}
+
+function addEventsToTimeline(timeline, events) {
+    // Calcola posizioni
+    const positions = events.map(ev => {
+        const s = parseTime(ev.start_time);
+        const e = parseTime(ev.end_time);
+        const startPos = ((s - START_HOUR) / TOTAL_SLOTS) * 100;
+        const endPos = ((e - START_HOUR) / TOTAL_SLOTS) * 100;
+        return { ev, startPos, width: endPos - startPos, startTime: s, endTime: e };
+    });
+
+    // Calcola livelli per sovrapposizioni
+    const layers = [];
+    positions.forEach((pos, i) => {
+        let layer = 0;
+        for (let j = 0; j < i; j++) {
+            if (positions[j].startTime < pos.endTime && positions[j].endTime > pos.startTime) {
+                if (layers[j] >= layer) layer = layers[j] + 1;
+            }
+        }
+        layers.push(layer);
+    });
+
+    const maxLayer = Math.max(0, ...layers) + 1;
+
+    positions.forEach((pos, i) => {
+        if (pos.width <= 0) return;
+        const block = document.createElement('div');
+        block.className = 'event-block';
+        block.style.left = Math.max(0, pos.startPos) + '%';
+        block.style.width = Math.min(pos.width, 100 - Math.max(0, pos.startPos)) + '%';
+
+        const layerH = 90 / maxLayer;
+        block.style.top = (5 + layers[i] * layerH) + '%';
+        block.style.height = (layerH - 2) + '%';
+
+        // Colore basato su tipologia
+        block.style.backgroundColor = getEventColor(pos.ev);
+
+        const startStr = formatTime(pos.ev.start_time);
+        const endStr = formatTime(pos.ev.end_time);
+
+        block.innerHTML = '<div class="ev-title">' + escapeHtml(pos.ev.title) + '</div>' +
+            '<div class="ev-time">' + startStr + ' - ' + endStr + '</div>';
+
+        block.title = pos.ev.title + '\n' + startStr + ' - ' + endStr +
+            (pos.ev.description ? '\n' + pos.ev.description : '');
+
+        // Context menu
+        block.addEventListener('contextmenu', e => {
+            e.preventDefault();
+            if (pos.ev.id && confirm('Eliminare "' + pos.ev.title + '"?')) {
+                deleteEvent(pos.ev.id);
+            }
+        });
+
+        timeline.appendChild(block);
+    });
+}
+
+function parseTime(timeStr) {
+    if (!timeStr) return 8;
+    const parts = timeStr.split(':');
+    return parseInt(parts[0]) + (parseInt(parts[1] || 0) / 60);
+}
+
+function formatTime(timeStr) {
+    if (!timeStr) return '--:--';
+    const parts = timeStr.split(':');
+    return parts[0].padStart(2, '0') + ':' + (parts[1] || '00').padStart(2, '0');
+}
+
+function getEventColor(ev) {
+    const title = (ev.title || '').toLowerCase();
+    const type = (ev.type || '').toLowerCase();
+    if (title.includes('ferie') || title.includes('permesso')) return '#1e40af';
+    if (title.includes('malattia')) return '#7c3aed';
+    if (title.includes('reperibilit')) return '#06b6d4';
+    if (title.includes('presidio')) return '#6b7280';
+    if (type.includes('ticket')) return '#dc2626';
+    if (type.includes('commessa')) return '#ea580c';
+    return '#2563eb';
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// ─── Modal ───────────────────────────────────────────────────────────
+function openNewEventModal() {
+    document.getElementById('modal-title').textContent = 'Nuovo Evento';
+    document.getElementById('event-id').value = '';
+    document.getElementById('event-titolo').value = '';
+    document.getElementById('event-data').value = currentDate;
+    document.getElementById('event-inizio').value = '08:00';
+    document.getElementById('event-fine').value = '17:00';
+    document.getElementById('event-descrizione').value = '';
+    document.getElementById('event-modal').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('event-modal').classList.add('hidden');
+}
+
+function populateTechnicianSelect() {
+    const sel = document.getElementById('event-tecnico');
+    sel.innerHTML = '<option value="">-- Seleziona tecnico --</option>';
+    technicians.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t.id || t.name;
+        opt.textContent = t.name;
+        sel.appendChild(opt);
+    });
+}
+
+// ─── UI state ────────────────────────────────────────────────────────
+function showLoading() {
+    document.getElementById('loading').classList.remove('hidden');
+    document.getElementById('error').classList.add('hidden');
+    document.getElementById('timeline-container').classList.add('hidden');
+    document.getElementById('setup-container').classList.add('hidden');
+}
+
+function showTimeline() {
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById('error').classList.add('hidden');
+    document.getElementById('timeline-container').classList.remove('hidden');
+    document.getElementById('setup-container').classList.add('hidden');
+}
+
+function showError(msg) {
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById('error').classList.remove('hidden');
+    document.getElementById('error-msg').textContent = msg;
+    document.getElementById('timeline-container').classList.add('hidden');
+    document.getElementById('setup-container').classList.add('hidden');
+}
+</script>
+</body>
+</html>

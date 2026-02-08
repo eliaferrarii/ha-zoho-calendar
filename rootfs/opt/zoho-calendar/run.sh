@@ -1,0 +1,30 @@
+#!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
+
+# Read options from /data/options.json
+export UPDATE_INTERVAL=$(bashio::config 'update_interval')
+export MQTT_TOPIC_PREFIX=$(bashio::config 'mqtt_topic_prefix')
+
+# MQTT configuration from HA Supervisor
+if bashio::services.available "mqtt"; then
+    export MQTT_HOST=$(bashio::services mqtt "host")
+    export MQTT_PORT=$(bashio::services mqtt "port")
+    export MQTT_USER=$(bashio::services mqtt "username")
+    export MQTT_PASS=$(bashio::services mqtt "password")
+    bashio::log.info "MQTT broker: ${MQTT_HOST}:${MQTT_PORT}"
+else
+    bashio::log.warning "MQTT service not available"
+fi
+
+# Ingress
+export INGRESS_PORT=$(bashio::addon.ingress_port)
+export INGRESS_ENTRY=$(bashio::addon.ingress_entry)
+
+bashio::log.info "Starting Zoho Calendar add-on..."
+bashio::log.info "Update interval: ${UPDATE_INTERVAL}s"
+bashio::log.info "Ingress port: ${INGRESS_PORT}"
+bashio::log.info "Ingress entry: ${INGRESS_ENTRY}"
+bashio::log.info "Configuration managed from web UI"
+
+cd /opt/zoho-calendar
+exec python3 app.py
