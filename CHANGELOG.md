@@ -1,6 +1,3 @@
-## 1.0.1
-- Fix: avvio s6/with-contenv (PID 1)
-
 # Changelog
 
 ## 1.0.0
