@@ -750,11 +750,8 @@ function renderTimeline(events) {
         return;
     }
 
-    // Calcola altezza righe
-    const container = document.getElementById('timeline-container');
-    const headerH = container.querySelector('.timeline-header').offsetHeight;
-    const availableH = container.offsetHeight - headerH;
-    const rowH = Math.max(60, Math.min(Math.floor(availableH / techNames.length), 150));
+    // Altezza righe fissa per evitare salti verticali
+    const rowH = 80;
 
     techNames.forEach(name => {
         const row = document.createElement('div');

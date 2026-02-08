@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.8
+
+- Controlli calendario disposti in orizzontale
+- Altezza righe timeline fissa per evitare ridimensionamenti verticali casuali
+
 ## 1.0.7
 
 - Redirect URI OAuth aggiornato a `http://localhost:3000/auth/callback` (configurabile via `ZOHO_REDIRECT_URI`)

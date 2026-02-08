@@ -51,6 +51,13 @@ header h1 {
     gap: 8px;
 }
 
+#calendar-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
 .header-controls input[type="date"] {
     background: var(--bg);
     color: var(--text);
