@@ -209,6 +209,10 @@ class CalendarManager:
         """Crea un nuovo evento su Zoho Creator."""
         defaults = self.config_manager.get_event_defaults()
 
+        tecnico_id = self._resolve_technician_id(tecnico_id)
+        if not tecnico_id:
+            raise ValueError("ID tecnico mancante: inserisci l'ID del record Zoho per il tecnico")
+
         event_data = {
             "Titolo": titolo,
             "LkpTecnico": tecnico_id,
@@ -263,6 +267,19 @@ class CalendarManager:
                 "department": ev.get("Reparto", ""),
             })
         return transformed
+
+    def _resolve_technician_id(self, tecnico_id):
+        """Risolve l'ID tecnico se e' stato passato il nome."""
+        if not tecnico_id:
+            return ""
+        # Se sembra un ID numerico, usalo direttamente
+        if str(tecnico_id).isdigit():
+            return tecnico_id
+        # Altrimenti prova a mappare da nome -> id
+        for tech in self.technicians:
+            if tech.get("name") == tecnico_id and tech.get("id"):
+                return tech["id"]
+        return ""
 
     @staticmethod
     def _get_technician_status(name, events):

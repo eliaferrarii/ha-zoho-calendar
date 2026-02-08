@@ -31,7 +31,7 @@ Integrazione del calendario di Zoho Service Management (Zoho Creator) con Home A
 | `zoho_form` | Nome form | `Pianificazione` |
 | `zoho_report` | Nome report | `CalendarioPianificazione` |
 | `attivita_interna_id` | ID Attivita Interna (opzionale) | |
-| `technicians` | Lista tecnici (id + nome) | 9 tecnici predefiniti |
+| `technicians` | Lista tecnici (id + nome). **ID tecnico = record ID Zoho** | 9 tecnici predefiniti |
 | `update_interval` | Intervallo polling (secondi) | `60` |
 | `mqtt_topic_prefix` | Prefisso topic MQTT | `zoho_calendar` |
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.11
+
+- Gestione ID tecnico: campo in UI + validazione prima di creare eventi
+- Creazione eventi usa ID tecnico (lookup Zoho), non il nome
+- Documentazione aggiornata su ID tecnico
+
 ## 1.0.10
 
 - Documentazione resa piu generica (campi Zoho personalizzati come esempio)

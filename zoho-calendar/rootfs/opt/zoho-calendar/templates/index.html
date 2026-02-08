@@ -162,7 +162,7 @@
                     <!-- Step 3: Tecnici -->
                     <div id="step-3" class="setup-step hidden">
                         <h3>Lista Tecnici</h3>
-                        <p class="step-desc">Gestisci la lista dei tecnici da monitorare nel calendario.</p>
+                        <p class="step-desc">Gestisci la lista dei tecnici da monitorare nel calendario. Inserisci anche l'ID Zoho del record tecnico (richiesto per creare eventi).</p>
                         <ul class="tech-list" id="tech-list"></ul>
                         <button type="button" class="btn-add-tech" onclick="addTechnician()">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -513,6 +513,8 @@ function renderTechList() {
         li.innerHTML =
             '<input type="text" value="' + escapeHtml(tech.name) + '" ' +
             'onchange="updateTechName(' + i + ', this.value)" placeholder="Nome tecnico">' +
+            '<input type="text" value="' + escapeHtml(tech.id || "") + '" ' +
+            'onchange="updateTechId(' + i + ', this.value)" placeholder="ID tecnico">' +
             '<button type="button" class="btn-remove" onclick="removeTechnician(' + i + ')" title="Rimuovi">&times;</button>';
         list.appendChild(li);
     });
@@ -533,6 +535,10 @@ function removeTechnician(index) {
 
 function updateTechName(index, value) {
     setupTechnicians[index].name = value;
+}
+
+function updateTechId(index, value) {
+    setupTechnicians[index].id = value;
 }
 
 async function saveTechnicians() {
@@ -892,8 +898,8 @@ function populateTechnicianSelect() {
     sel.innerHTML = '<option value="">-- Seleziona tecnico --</option>';
     technicians.forEach(t => {
         const opt = document.createElement('option');
-        opt.value = t.id || t.name;
-        opt.textContent = t.name;
+        opt.value = t.id || '';
+        opt.textContent = t.id ? t.name : (t.name + ' (ID mancante)');
         sel.appendChild(opt);
     });
 }

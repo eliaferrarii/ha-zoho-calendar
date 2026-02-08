@@ -72,6 +72,9 @@ POST /api/events
 Nota: i campi possono variare in base alla tua app Zoho Creator. Gli esempi sotto
 sono basati su un'implementazione reale e vanno adattati alla tua struttura.
 
+Importante: il campo lookup `LkpTecnico` richiede **l'ID del record Zoho** del tecnico,
+non il nome visualizzato. Inserisci gli ID nella lista tecnici dell'add-on.
+
 Il report `CalendarioPianificazione` espone i seguenti campi:
 
 | Campo | Descrizione |

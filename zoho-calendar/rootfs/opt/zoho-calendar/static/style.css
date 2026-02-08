@@ -572,6 +572,10 @@ form { padding: 16px; }
     font-size: 13px;
 }
 
+.tech-item input[placeholder="ID tecnico"] {
+    flex: 0 0 160px;
+}
+
 .tech-item input:focus {
     outline: none;
     border-color: var(--accent);
