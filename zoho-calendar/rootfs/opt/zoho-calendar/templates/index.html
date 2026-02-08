@@ -196,7 +196,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="cfg-attivita-id">ID Attivita Interna (opzionale)</label>
+                        <label for="cfg-attivita-id">ID Attivita Interna (obbligatorio)</label>
                             <input type="text" id="cfg-attivita-id" placeholder="">
                         </div>
                         <div class="form-actions">
@@ -563,6 +563,11 @@ async function saveTechnicians() {
 // ─── Setup: Step 4 - Impostazioni ───────────────────────────────────
 async function saveSettings() {
     try {
+        const attivitaId = document.getElementById('cfg-attivita-id').value.trim();
+        if (!attivitaId) {
+            showSetupAlert('ID Attivita Interna obbligatorio', 'error');
+            return;
+        }
         const resp = await fetch(API + '/config', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -570,7 +575,7 @@ async function saveSettings() {
                 tipologia: document.getElementById('cfg-tipologia').value.trim(),
                 ore_pianificate: document.getElementById('cfg-ore').value.trim(),
                 reparto: document.getElementById('cfg-reparto').value.trim(),
-                attivita_interna_id: document.getElementById('cfg-attivita-id').value.trim(),
+                attivita_interna_id: attivitaId,
             }),
         });
         const json = await resp.json();

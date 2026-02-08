@@ -1,6 +1,6 @@
 name: "Zoho Calendar"
 description: "Integrazione calendario Zoho Service Management per Home Assistant"
-version: "1.0.8"
+version: "1.0.9"
 slug: "zoho-calendar"
 url: "https://github.com/emironet/ha-addons/tree/main/zoho-calendar"
 arch:

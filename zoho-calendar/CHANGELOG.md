@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.9
+
+- Documentazione installazione e OAuth aggiornata (redirect URI + flusso corretto)
+- ID Attivita Interna segnato come obbligatorio e validato in UI
+
 ## 1.0.8
 
 - Controlli calendario disposti in orizzontale

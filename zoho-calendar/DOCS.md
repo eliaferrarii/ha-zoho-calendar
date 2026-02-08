@@ -9,29 +9,20 @@
 
 ## Ottenere le credenziali OAuth2
 
-### 1. Creare un Self Client su Zoho
+### 1. Creare un client OAuth su Zoho
 
 1. Vai su [Zoho API Console](https://api-console.zoho.eu/)
-2. Clicca "Add Client" > "Self Client"
-3. Annota il **Client ID** e **Client Secret**
+2. Clicca "Add Client" e crea un **Server-based** client (consigliato)
+3. Imposta **Redirect URI** a: `http://localhost:3000/auth/callback`
+4. Annota il **Client ID** e **Client Secret**
 
-### 2. Generare il Refresh Token
+### 2. Ottenere il Refresh Token (via add-on)
 
-1. Nella API Console, seleziona il Self Client
-2. In "Generate Code", inserisci gli scopes:
-   ```
-   ZohoCreator.report.READ,ZohoCreator.form.CREATE,ZohoCreator.report.UPDATE,ZohoCreator.report.DELETE
-   ```
-3. Seleziona durata e genera il codice
-4. Usa il codice per ottenere il refresh token tramite API:
-   ```bash
-   curl -X POST "https://accounts.zoho.eu/oauth/v2/token" \
-     -d "grant_type=authorization_code" \
-     -d "client_id=YOUR_CLIENT_ID" \
-     -d "client_secret=YOUR_CLIENT_SECRET" \
-     -d "code=YOUR_CODE"
-   ```
-5. Copia il `refresh_token` dalla risposta
+1. Apri l'add-on e vai allo step **Autorizzazione**
+2. Clicca **Autorizza con Zoho** e completa il consenso
+3. Copia il parametro `code` dalla URL di callback
+4. Incolla il codice nell'add-on e clicca **Scambia codice**
+5. Il refresh token viene salvato automaticamente
 
 ### 3. Configurazione Add-on
 
@@ -39,6 +30,13 @@ Inserisci i valori nella configurazione dell'add-on:
 - `zoho_client_id`: Client ID
 - `zoho_client_secret`: Client Secret
 - `zoho_refresh_token`: Refresh Token ottenuto
+
+### Scopes richiesti
+
+Usa almeno questi scopes:
+```
+ZohoCreator.report.READ,ZohoCreator.form.CREATE,ZohoCreator.report.UPDATE,ZohoCreator.report.DELETE
+```
 
 ## API REST
 
@@ -84,7 +82,7 @@ Il report `CalendarioPianificazione` espone i seguenti campi:
 | `DataFine` | Ora fine (HH:MM) |
 | `Tipologia` | Tipo attivita |
 | `OrePianificate` | Ore pianificate |
-| `LkpAttivitaInterna` | Riferimento attivita interna |
+| `LkpAttivitaInterna` | **Obbligatorio**: riferimento attivita interna |
 | `Reparto` | Reparto |
 
 ## Risoluzione problemi

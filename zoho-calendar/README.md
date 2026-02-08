@@ -12,10 +12,11 @@ Integrazione del calendario di Zoho Service Management (Zoho Creator) con Home A
 
 ## Installazione
 
-1. Aggiungere questo repository come add-on repository in Home Assistant
-2. Installare l'add-on "Zoho Calendar"
-3. Configurare le credenziali Zoho nella tab Configurazione
-4. Avviare l'add-on
+1. Home Assistant → **Impostazioni** → **Add-on** → **Store** → **Repository**
+2. Aggiungi il repository: `https://github.com/eliaferrarii/ha-zoho-calendar`
+3. Installa l'add-on **Zoho Calendar**
+4. Avvia l'add-on
+5. Apri l'interfaccia Ingress dell'add-on e completa la configurazione guidata
 
 ## Configurazione
 
@@ -29,6 +30,7 @@ Integrazione del calendario di Zoho Service Management (Zoho Creator) con Home A
 | `zoho_app` | Nome app Zoho Creator | `service-management` |
 | `zoho_form` | Nome form | `Pianificazione` |
 | `zoho_report` | Nome report | `CalendarioPianificazione` |
+| `attivita_interna_id` | ID Attivita Interna (obbligatorio) | |
 | `technicians` | Lista tecnici (id + nome) | 9 tecnici predefiniti |
 | `update_interval` | Intervallo polling (secondi) | `60` |
 | `mqtt_topic_prefix` | Prefisso topic MQTT | `zoho_calendar` |
