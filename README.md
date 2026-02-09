@@ -1,276 +1,276 @@
-## Zoho Calendar – Home Assistant Add-on
+Zoho Calendar – Home Assistant Add-on
 
-## Integration between Zoho Creator (Service Management) and Home Assistant to manage staff scheduling, view events, and create or modify tasks directly from Home Assistant.
+Integration between Zoho Creator (Service Management) and Home Assistant to manage staff scheduling, view events, and create or modify tasks directly from Home Assistant.
 
-## 
 
-## What the add-on does
 
-## Reads scheduled tasks from the CalendarioPianificazione report in Zoho Creator
+What the add-on does
 
-## Creates MQTT sensors for each person (status, events, next job)
+Reads scheduled tasks from the CalendarioPianificazione report in Zoho Creator
 
-## Provides a web dashboard integrated into Home Assistant (Ingress) with a daily timeline
+Creates MQTT sensors for each person (status, events, next job)
 
-## Allows creating, editing, and deleting events via REST API
+Provides a web dashboard integrated into Home Assistant (Ingress) with a daily timeline
 
-## Automatically syncs at configurable intervals
+Allows creating, editing, and deleting events via REST API
 
-## 
+Automatically syncs at configurable intervals
 
-## Requirements
 
-## Zoho account with access to Zoho Creator
 
-## Zoho Creator app (e.g. service-management) with a Pianificazione form
+Requirements
 
-## Zoho OAuth2 credentials (Client ID, Client Secret, Refresh Token)
+Zoho account with access to Zoho Creator
 
-## MQTT broker configured in Home Assistant (e.g. Mosquitto add-on)
+Zoho Creator app (e.g. service-management) with a Pianificazione form
 
-## 
+Zoho OAuth2 credentials (Client ID, Client Secret, Refresh Token)
 
-## Installation
+MQTT broker configured in Home Assistant (e.g. Mosquitto add-on)
 
-## Go to Home Assistant → Settings → Add-ons → Store
 
-## Open the menu at the top right → Repositories
 
-## Add:
+Installation
 
-## https://github.com/eliaferrarii/ha-zoho-calendar
+Go to Home Assistant → Settings → Add-ons → Store
 
-## 
+Open the menu at the top right → Repositories
 
-## Install the Zoho Calendar add-on
+Add:
 
-## Start the add-on
+https://github.com/eliaferrarii/ha-zoho-calendar
 
-## Open the add-on web interface from the sidebar
 
-## 
 
-## Add-on configuration
+Install the Zoho Calendar add-on
 
-## Main add-on options:
+Start the add-on
 
-## 
+Open the add-on web interface from the sidebar
 
-## update\_interval
 
-## Update interval in seconds (default 60)
 
-## 
+Add-on configuration
 
-## mqtt\_topic\_prefix
+Main add-on options:
 
-## MQTT topic prefix (default zoho\_calendar)
 
-## 
 
-## Detailed Zoho configuration (client ID, secret, refresh token, app names, forms, reports, technicians, etc.) is handled through the setup wizard in the add-on web interface.
+update\_interval
 
-## 
+Update interval in seconds (default 60)
 
-## Zoho OAuth2 – Getting credentials
 
-## Go to https://api-console.zoho.eu
 
-## 
+mqtt\_topic\_prefix
 
-## Create a new OAuth client of type Server-based
+MQTT topic prefix (default zoho\_calendar)
 
-## Set the Redirect URI to:
 
-## http://localhost:3000/auth/callback
 
-## 
+Detailed Zoho configuration (client ID, secret, refresh token, app names, forms, reports, technicians, etc.) is handled through the setup wizard in the add-on web interface.
 
-## Save the Client ID and Client Secret
 
-## 
 
-## Getting the refresh token via the add-on
+Zoho OAuth2 – Getting credentials
 
-## Open the add-on interface
+Go to https://api-console.zoho.eu
 
-## Go to the Authorization section
 
-## Click Authorize with Zoho
 
-## Complete login and consent
+Create a new OAuth client of type Server-based
 
-## Copy the code parameter from the callback URL
+Set the Redirect URI to:
 
-## Paste it into the add-on and click Exchange code
+http://localhost:3000/auth/callback
 
-## The refresh token is saved automatically
 
-## 
 
-## Recommended scopes
+Save the Client ID and Client Secret
 
-## ZohoCreator.report.READ,ZohoCreator.form.CREATE,ZohoCreator.report.UPDATE,ZohoCreator.report.DELETE
 
-## 
 
-## Zoho Creator data structure
+Getting the refresh token via the add-on
 
-## The add-on typically works with:
+Open the add-on interface
 
-## 
+Go to the Authorization section
 
-## App: service-management
+Click Authorize with Zoho
 
-## Form: Pianificazione
+Complete login and consent
 
-## Report: CalendarioPianificazione
+Copy the code parameter from the callback URL
 
-## 
+Paste it into the add-on and click Exchange code
 
-## Fields used (typical example):
+The refresh token is saved automatically
 
-## ID
 
-## LkpTecnico.Nominativo
 
-## Titolo
+Recommended scopes
 
-## DescrizioneAttivita
+ZohoCreator.report.READ,ZohoCreator.form.CREATE,ZohoCreator.report.UPDATE,ZohoCreator.report.DELETE
 
-## Data
 
-## DataInizio
 
-## DataFine
+Zoho Creator data structure
 
-## Tipologia
+The add-on typically works with:
 
-## OrePianificate
 
-## Reparto
 
-## 
+App: service-management
 
-## Note: the person field (lookup) requires the Zoho record ID of the person, not the name.
+Form: Pianificazione
 
-## 
+Report: CalendarioPianificazione
 
-## Web dashboard
 
-## From the Home Assistant sidebar, you will find Zoho Calendario.
 
-## The dashboard shows a daily timeline with:
+Fields used (typical example):
 
-## All configured people
+ID
 
-## Events by time slot
+LkpTecnico.Nominativo
 
-## Busy or free status
+Titolo
 
-## 
+DescrizioneAttivita
 
-## Add-on REST API
+Data
 
-## Accessible via Ingress.
+DataInizio
 
-## 
+DataFine
 
-## Events
+Tipologia
 
-## GET /api/events → today’s events
+OrePianificate
 
-## GET /api/events/YYYY-MM-DD → events by date
+Reparto
 
-## POST /api/events → create event
 
-## PUT /api/events/{id} → update event
 
-## DELETE /api/events/{id} → delete event
+Note: the person field (lookup) requires the Zoho record ID of the person, not the name.
 
-## 
 
-## People
 
-## GET /api/technicians → list of people and status
+Web dashboard
 
-## 
+From the Home Assistant sidebar, you will find Zoho Calendario.
 
-## System
+The dashboard shows a daily timeline with:
 
-## POST /api/sync → force synchronization
+All configured people
 
-## GET /api/health → service status
+Events by time slot
 
-## 
+Busy or free status
 
-## Event creation example
 
-## {
 
-## "titolo": "Server maintenance",
+Add-on REST API
 
-## "tecnico\_id": "123456789",
+Accessible via Ingress.
 
-## "data": "2025-01-15",
 
-## "ora\_inizio": "09:00",
 
-## "ora\_fine": "12:00",
+Events
 
-## "descrizione": "Scheduled maintenance"
+GET /api/events → today’s events
 
-## }
+GET /api/events/YYYY-MM-DD → events by date
 
-## 
+POST /api/events → create event
 
-## MQTT sensors created
+PUT /api/events/{id} → update event
 
-## For each person:
+DELETE /api/events/{id} → delete event
 
-## sensor.zoho\_calendar\_{name}next\_event
 
-## sensor.zoho\_calendar{name}events\_today
 
-## sensor.zoho\_calendar{name}status
+People
 
-## sensor.zoho\_calendar{name}\_next\_time
+GET /api/technicians → list of people and status
 
-## 
 
-## Global sensors:
 
-## sensor.zoho\_calendar\_total\_events\_today
+System
 
-## sensor.zoho\_calendar\_last\_update
+POST /api/sync → force synchronization
 
-## 
+GET /api/health → service status
 
-## Troubleshooting
 
-## 
 
-## Sensors not visible
+Event creation example
 
-## Check that MQTT is running
+{
 
-## Check the add-on logs
+"titolo": "Server maintenance",
 
-## Wait at least one update cycle
+"tecnico\_id": "123456789",
 
-## 
+"data": "2025-01-15",
 
-## Error: refresh token not configured
+"ora\_inizio": "09:00",
 
-## Complete the OAuth procedure
+"ora\_fine": "12:00",
 
-## Enter the token correctly
+"descrizione": "Scheduled maintenance"
 
-## 
+}
 
-## Error: invalid\_grant
 
-## The refresh token has been revoked
 
-## Generate a new one through the authorization process
+MQTT sensors created
+
+For each person:
+
+sensor.zoho\_calendar\_{name}next\_event
+
+sensor.zoho\_calendar{name}events\_today
+
+sensor.zoho\_calendar{name}status
+
+sensor.zoho\_calendar{name}\_next\_time
+
+
+
+Global sensors:
+
+sensor.zoho\_calendar\_total\_events\_today
+
+sensor.zoho\_calendar\_last\_update
+
+
+
+Troubleshooting
+
+
+
+Sensors not visible
+
+Check that MQTT is running
+
+Check the add-on logs
+
+Wait at least one update cycle
+
+
+
+Error: refresh token not configured
+
+Complete the OAuth procedure
+
+Enter the token correctly
+
+
+
+Error: invalid\_grant
+
+The refresh token has been revoked
+
+Generate a new one through the authorization process
 
