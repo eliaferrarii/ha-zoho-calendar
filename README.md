@@ -1,10 +1,10 @@
-Zoho Calendar – Home Assistant Add-on
+\## Zoho Calendar – Home Assistant Add-on
 
 Integration between Zoho Creator (Service Management) and Home Assistant to manage staff scheduling, view events, and create or modify tasks directly from Home Assistant.
 
 
 
-What the add-on does
+\## What the add-on does
 
 Reads scheduled tasks from the CalendarioPianificazione report in Zoho Creator
 
@@ -18,7 +18,7 @@ Automatically syncs at configurable intervals
 
 
 
-Requirements
+\## Requirements
 
 Zoho account with access to Zoho Creator
 
@@ -30,7 +30,7 @@ MQTT broker configured in Home Assistant (e.g. Mosquitto add-on)
 
 
 
-Installation
+\## Installation
 
 Go to Home Assistant → Settings → Add-ons → Store
 
@@ -108,15 +108,15 @@ The refresh token is saved automatically
 
 
 
-Recommended scopes
+\## Recommended scopes
 
 ZohoCreator.report.READ,ZohoCreator.form.CREATE,ZohoCreator.report.UPDATE,ZohoCreator.report.DELETE
 
 
 
-Zoho Creator data structure
+\## Zoho Creator data structure
 
-The add-on typically works with:
+\## The add-on typically works with:
 
 
 
@@ -156,7 +156,7 @@ Note: the person field (lookup) requires the Zoho record ID of the person, not t
 
 
 
-Web dashboard
+\## Web dashboard
 
 From the Home Assistant sidebar, you will find Zoho Calendario.
 
@@ -176,7 +176,7 @@ Accessible via Ingress.
 
 
 
-Events
+\## Events
 
 GET /api/events → today’s events
 
@@ -190,13 +190,13 @@ DELETE /api/events/{id} → delete event
 
 
 
-People
+\## People
 
 GET /api/technicians → list of people and status
 
 
 
-System
+\## System
 
 POST /api/sync → force synchronization
 
@@ -204,7 +204,7 @@ GET /api/health → service status
 
 
 
-Event creation example
+\## Event creation example
 
 {
 
@@ -224,9 +224,9 @@ Event creation example
 
 
 
-MQTT sensors created
+\## MQTT sensors created
 
-For each person:
+\## For each person:
 
 sensor.zoho\_calendar\_{name}next\_event
 
@@ -238,7 +238,7 @@ sensor.zoho\_calendar{name}\_next\_time
 
 
 
-Global sensors:
+\## Global sensors:
 
 sensor.zoho\_calendar\_total\_events\_today
 
@@ -246,11 +246,11 @@ sensor.zoho\_calendar\_last\_update
 
 
 
-Troubleshooting
+\## Troubleshooting
 
 
 
-Sensors not visible
+\## Sensors not visible
 
 Check that MQTT is running
 
@@ -260,7 +260,7 @@ Wait at least one update cycle
 
 
 
-Error: refresh token not configured
+\## Error: refresh token not configured
 
 Complete the OAuth procedure
 
@@ -268,7 +268,7 @@ Enter the token correctly
 
 
 
-Error: invalid\_grant
+\## Error: invalid\_grant
 
 The refresh token has been revoked
 
