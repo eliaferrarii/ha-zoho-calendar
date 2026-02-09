@@ -14,7 +14,15 @@
 
 ## 
 
-## Permette di sincronizzare la pianificazione dei tecnici, visualizzare gli interventi su una dashboard dedicata e creare o modificare attività tramite API REST o interfaccia web integrata.
+## Permette di:
+
+## 
+
+## \- Sincronizzare la pianificazione dei tecnici  
+
+## \- Visualizzare gli interventi su una dashboard dedicata  
+
+## \- Creare o modificare attività tramite API REST o interfaccia web  
 
 ## 
 
@@ -22,7 +30,7 @@
 
 ## 
 
-## La documentazione completa è disponibile nel file DOCS.md all’interno della cartella dell’add-on.
+## La documentazione completa è disponibile nel file `addons/zoho-calendar/DOCS.md`.
 
 ## 
 
@@ -66,15 +74,15 @@
 
 ## 
 
-## 1\. Vai in Home Assistant → Impostazioni → Add-on → Store  
+## 1\. Vai in \*\*Home Assistant → Impostazioni → Add-on → Store\*\*  
 
-## 2\. Apri il menu in alto a destra → Repository  
+## 2\. Apri il menu in alto a destra → \*\*Repository\*\*  
 
-## 3\. Aggiungi  
+## 3\. Aggiungi questo repository:  
 
 ## &nbsp;  https://github.com/eliaferrarii/ha-zoho-calendar  
 
-## 4\. Installa Zoho Calendar  
+## 4\. Installa \*\*Zoho Calendar\*\*  
 
 ## 5\. Avvia l’add-on  
 
@@ -90,15 +98,13 @@
 
 ## 
 
-## update\_interval  
+## | Opzione | Descrizione |
 
-## Intervallo di sincronizzazione in secondi
+## |--------|-------------|
 
-## 
+## | `update\_interval` | Intervallo di sincronizzazione in secondi |
 
-## mqtt\_topic\_prefix  
-
-## Prefisso dei topic MQTT usati per i sensori
+## | `mqtt\_topic\_prefix` | Prefisso dei topic MQTT |
 
 ## 
 
@@ -114,7 +120,17 @@
 
 ## 
 
-## L’add-on legge le attività pianificate da Zoho Creator, le elabora e le pubblica come sensori MQTT e tramite API REST per essere usate in Home Assistant.
+## L’add-on:
+
+## 
+
+## 1\. Legge le attività pianificate da Zoho Creator  
+
+## 2\. Le elabora  
+
+## 3\. Pubblica stati e informazioni su MQTT  
+
+## 4\. Espone una dashboard e API REST locali  
 
 ## 
 
@@ -126,11 +142,11 @@
 
 ## 
 
-## sensor.zoho\_calendar\_<tecnico>\_stato  
+## \- sensor.zoho\_calendar\_<tecnico>\_stato  
 
-## sensor.zoho\_calendar\_<tecnico>\_prossimo\_evento  
+## \- sensor.zoho\_calendar\_<tecnico>\_prossimo\_evento  
 
-## sensor.zoho\_calendar\_<tecnico>\_eventi\_oggi  
+## \- sensor.zoho\_calendar\_<tecnico>\_eventi\_oggi  
 
 ## 
 
@@ -138,9 +154,9 @@
 
 ## 
 
-## sensor.zoho\_calendar\_eventi\_totali\_oggi  
+## \- sensor.zoho\_calendar\_eventi\_totali\_oggi  
 
-## sensor.zoho\_calendar\_ultimo\_aggiornamento  
+## \- sensor.zoho\_calendar\_ultimo\_aggiornamento  
 
 ## 
 
