@@ -1,107 +1,167 @@
-# Documentazione - Zoho Calendar Add-on
+## Zoho Calendar – Add-on per Home Assistant
 
-## Prerequisiti
+Integrazione tra Zoho Creator (Service Management) e Home Assistant per gestire la pianificazione dei tecnici, visualizzare eventi e creare o modificare attività direttamente da Home Assistant.
 
-1. **Account Zoho** con accesso a Zoho Creator
-2. **App Zoho Creator** "service-management" con form "Pianificazione"
-3. **Credenziali OAuth2** (Client ID, Client Secret, Refresh Token)
-4. **Broker MQTT** configurato in Home Assistant (es. Mosquitto)
+## Cosa fa l’add-on
 
-## Ottenere le credenziali OAuth2
+- Legge le attività pianificate dal report CalendarioPianificazione di Zoho Creator  
+- Crea sensori MQTT per ogni tecnico (stato, eventi, prossimo intervento)  
+- Espone una dashboard web integrata in Home Assistant (Ingress) con timeline giornaliera  
+- Permette di creare, modificare ed eliminare eventi tramite API REST  
+- Sincronizza automaticamente a intervalli configurabili  
 
-### 1. Creare un client OAuth su Zoho
+## Requisiti
 
-1. Vai su [Zoho API Console](https://api-console.zoho.eu/)
-2. Clicca "Add Client" e crea un **Server-based** client (consigliato)
-3. Imposta **Redirect URI** a: `http://localhost:3000/auth/callback`
-4. Annota il **Client ID** e **Client Secret**
+- Account Zoho con accesso a Zoho Creator  
+- App Zoho Creator (es. service-management) con form Pianificazione  
+- Credenziali OAuth2 Zoho (Client ID, Client Secret, Refresh Token)  
+- Broker MQTT configurato in Home Assistant (es. Mosquitto add-on)
 
-### 2. Ottenere il Refresh Token (via add-on)
+## Installazione
 
-1. Apri l'add-on e vai allo step **Autorizzazione**
-2. Clicca **Autorizza con Zoho** e completa il consenso
-3. Copia il parametro `code` dalla URL di callback
-4. Incolla il codice nell'add-on e clicca **Scambia codice**
-5. Il refresh token viene salvato automaticamente
+1. Vai in Home Assistant → Impostazioni → Add-on → Store  
+2. Apri il menu in alto a destra → Repository  
+3. Aggiungi:  
+   https://github.com/eliaferrarii/ha-zoho-calendar  
+4. Installa l’add-on Zoho Calendar  
+5. Avvia l’add-on  
+6. Apri l’interfaccia web dell’add-on dal pannello laterale
 
-### 3. Configurazione Add-on
+## Configurazione add-on
 
-Inserisci i valori nella configurazione dell'add-on:
-- `zoho_client_id`: Client ID
-- `zoho_client_secret`: Client Secret
-- `zoho_refresh_token`: Refresh Token ottenuto
+Le opzioni principali dell’add-on sono:
 
-### Scopes richiesti
+update_interval  
+Intervallo di aggiornamento in secondi (default 60)
 
-Usa almeno questi scopes:
-```
+mqtt_topic_prefix  
+Prefisso dei topic MQTT (default zoho_calendar)
+
+La configurazione dettagliata di Zoho (client ID, secret, refresh token, nomi app, form, report, tecnici, ecc.) viene gestita dalla procedura guidata nell’interfaccia web dell’add-on.
+
+## OAuth2 Zoho – Ottenere le credenziali
+
+1. Vai su https://api-console.zoho.eu  
+2. Crea un nuovo client OAuth di tipo Server-based  
+3. Imposta la Redirect URI a:  
+   http://localhost:3000/auth/callback  
+4. Salva Client ID e Client Secret  
+
+## Ottenere il refresh token tramite add-on
+
+1. Apri l’interfaccia dell’add-on  
+2. Vai alla sezione Autorizzazione  
+3. Clicca Autorizza con Zoho  
+4. Completa login e consenso  
+5. Copia il parametro code dalla URL di callback  
+6. Incollalo nell’add-on e clicca Scambia codice  
+7. Il refresh token viene salvato automaticamente  
+
+## Scope consigliati
+
 ZohoCreator.report.READ,ZohoCreator.form.CREATE,ZohoCreator.report.UPDATE,ZohoCreator.report.DELETE
-```
 
-## API REST
+## Struttura dati Zoho Creator
 
-L'add-on espone le seguenti API tramite ingress:
+L’add-on lavora tipicamente con:
 
-| Metodo | Endpoint | Descrizione |
-|--------|----------|-------------|
-| GET | `/api/events` | Eventi di oggi |
-| GET | `/api/events/{data}` | Eventi per data (YYYY-MM-DD) |
-| POST | `/api/events` | Crea evento |
-| PUT | `/api/events/{id}` | Aggiorna evento |
-| DELETE | `/api/events/{id}` | Elimina evento |
-| GET | `/api/technicians` | Lista tecnici con stato |
-| POST | `/api/sync` | Forza sincronizzazione |
-| GET | `/api/health` | Health check |
+App: service-management  
+Form: Pianificazione  
+Report: CalendarioPianificazione  
 
-### Esempio creazione evento
+Campi usati (esempio tipico):
 
-```json
-POST /api/events
+ID  
+LkpTecnico.Nominativo  
+Titolo  
+DescrizioneAttivita  
+Data  
+DataInizio  
+DataFine  
+Tipologia  
+OrePianificate  
+Reparto  
+
+Attenzione: il campo tecnico (lookup) richiede l’ID record Zoho del tecnico, non il nome.
+
+## Dashboard web
+
+Dal menu laterale di Home Assistant trovi la voce Zoho Calendario.
+
+La dashboard mostra una timeline giornaliera con:
+
+- Tutti i tecnici configurati  
+- Eventi per fascia oraria  
+- Stato occupato o libero  
+
+## API REST dell’add-on
+
+Accessibili tramite Ingress.
+
+## Eventi
+
+GET /api/events → eventi di oggi  
+GET /api/events/YYYY-MM-DD → eventi per data  
+POST /api/events → crea evento  
+PUT /api/events/{id} → aggiorna evento  
+DELETE /api/events/{id} → elimina evento  
+
+## Tecnici
+
+GET /api/technicians → lista tecnici e stato  
+
+## Sistema
+
+POST /api/sync → forza sincronizzazione  
+GET /api/health → stato servizio  
+
+## Esempio creazione evento
+
 {
-    "titolo": "Manutenzione server",
-    "tecnico_id": "123456789",
-    "data": "2025-01-15",
-    "ora_inizio": "09:00",
-    "ora_fine": "12:00",
-    "descrizione": "Manutenzione programmata"
+  "titolo": "Manutenzione server",
+  "tecnico_id": "123456789",
+  "data": "2025-01-15",
+  "ora_inizio": "09:00",
+  "ora_fine": "12:00",
+  "descrizione": "Manutenzione programmata"
 }
-```
 
-## Campi Zoho Creator
+## Sensori MQTT creati
 
-Nota: i campi possono variare in base alla tua app Zoho Creator. Gli esempi sotto
-sono basati su un'implementazione reale e vanno adattati alla tua struttura.
+Per ogni tecnico:
 
-Importante: il campo lookup `LkpTecnico` richiede **l'ID del record Zoho** del tecnico,
-non il nome visualizzato. Inserisci gli ID nella lista tecnici dell'add-on.
+sensor.zoho_calendar_{nome}_prossimo_evento  
+sensor.zoho_calendar_{nome}_eventi_oggi  
+sensor.zoho_calendar_{nome}_stato  
+sensor.zoho_calendar_{nome}_orario_prossimo  
 
-Il report `CalendarioPianificazione` espone i seguenti campi:
+Sensori globali:
 
-| Campo | Descrizione |
-|-------|-------------|
-| `ID` | ID record |
-| `LkpTecnico.Nominativo` | Nome tecnico |
-| `Titolo` | Titolo attivita |
-| `DescrizioneAttivita` | Descrizione |
-| `Data` | Data (YYYY-MM-DD) |
-| `DataInizio` | Ora inizio (HH:MM) |
-| `DataFine` | Ora fine (HH:MM) |
-| `Tipologia` | Tipo attivita |
-| `OrePianificate` | Ore pianificate |
-| `LkpAttivitaInterna` | Riferimento attivita interna (campo personalizzato, opzionale) |
-| `Reparto` | Reparto |
+sensor.zoho_calendar_eventi_totali_oggi  
+sensor.zoho_calendar_ultimo_aggiornamento  
+
+## Integrazione custom senza MQTT
+
+Se vuoi sensori nativi in Home Assistant:
+
+1. Copia custom_components/zoho_calendar in  
+   config/custom_components/zoho_calendar  
+2. Riavvia Home Assistant  
+3. Aggiungi integrazione Zoho Calendar Add-on  
+4. Inserisci il Base URL dell’add-on  
+   default: http://addon_zoho-calendar:8099  
 
 ## Risoluzione problemi
 
-### I sensori non appaiono in HA
-- Verificare che il broker MQTT sia attivo e configurato
-- Controllare i log dell'add-on per errori di connessione MQTT
-- I sensori appaiono dopo il primo ciclo di polling
+Sensori non visibili  
+- Verifica che MQTT sia attivo  
+- Controlla i log dell’add-on  
+- Attendi almeno un ciclo di aggiornamento  
 
-### Errore "Refresh token non configurato"
-- Assicurarsi di aver inserito il refresh token nella configurazione
-- Il refresh token non scade, ma puo essere revocato da Zoho
+Errore refresh token non configurato  
+- Completa la procedura OAuth  
+- Inserisci correttamente il token  
 
-### Errore "invalid_grant"
-- Il refresh token e stato revocato o e scaduto
-- Generare un nuovo refresh token seguendo la procedura sopra
+Errore invalid_grant  
+- Il refresh token è stato revocato  
+- Rigeneralo tramite la procedura di autorizzazione  
