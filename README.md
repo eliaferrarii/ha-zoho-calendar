@@ -1,11 +1,11 @@
 ## Zoho Calendar – Add-on per Home Assistant
 
-Integrazione tra Zoho Creator (Service Management) e Home Assistant per gestire la pianificazione dei tecnici, visualizzare eventi e creare o modificare attività direttamente da Home Assistant.
+Integrazione tra Zoho Creator (Service Management) e Home Assistant per gestire la pianificazione delle persone, visualizzare eventi e creare o modificare attività direttamente da Home Assistant.
 
 ## Cosa fa l’add-on
 
 * Legge le attività pianificate dal report CalendarioPianificazione di Zoho Creator
-* Crea sensori MQTT per ogni tecnico (stato, eventi, prossimo intervento)
+* Crea sensori MQTT per ogni persona (stato, eventi, prossimo intervento)
 * Espone una dashboard web integrata in Home Assistant (Ingress) con timeline giornaliera
 * Permette di creare, modificare ed eliminare eventi tramite API REST
 * Sincronizza automaticamente a intervalli configurabili
@@ -82,7 +82,7 @@ Tipologia
 OrePianificate  
 Reparto
 
-Attenzione: il campo tecnico (lookup) richiede l’ID record Zoho del tecnico, non il nome.
+Attenzione: il campo persona (lookup) richiede l’ID record Zoho della persona, non il nome.
 
 ## Dashboard web
 
@@ -90,7 +90,7 @@ Dal menu laterale di Home Assistant trovi la voce Zoho Calendario.
 
 La dashboard mostra una timeline giornaliera con:
 
-* Tutti i tecnici configurati
+* Tutti le persone configurate
 * Eventi per fascia oraria
 * Stato occupato o libero
 
@@ -106,9 +106,9 @@ POST /api/events → crea evento
 PUT /api/events/{id} → aggiorna evento  
 DELETE /api/events/{id} → elimina evento
 
-## Tecnici
+## Persone
 
-GET /api/technicians → lista tecnici e stato
+GET /api/technicians → lista persone e stato
 
 ## Sistema
 
@@ -128,7 +128,7 @@ GET /api/health → stato servizio
 
 ## Sensori MQTT creati
 
-Per ogni tecnico:
+Per ogni persona:
 
 sensor.zoho\_calendar\_{nome}*prossimo\_evento  
 sensor.zoho\_calendar*{nome}*eventi\_oggi  
@@ -139,17 +139,6 @@ Sensori globali:
 
 sensor.zoho\_calendar\_eventi\_totali\_oggi  
 sensor.zoho\_calendar\_ultimo\_aggiornamento
-
-## Integrazione custom senza MQTT
-
-Se vuoi sensori nativi in Home Assistant:
-
-1. Copia custom\_components/zoho\_calendar in  
-   config/custom\_components/zoho\_calendar
-2. Riavvia Home Assistant
-3. Aggiungi integrazione Zoho Calendar Add-on
-4. Inserisci il Base URL dell’add-on  
-   default: http://addon\_zoho-calendar:8099
 
 ## Risoluzione problemi
 
