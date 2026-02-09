@@ -1,164 +1,122 @@
-Zoho Calendar – Home Assistant Add-on
+\## Zoho Calendar – Add-on per Home Assistant
 
 
 
-Integration between Zoho Creator (Service Management) and Home Assistant to manage staff scheduling, view events, and create or modify tasks directly from Home Assistant.
+Integrazione tra Zoho Creator (Service Management) e Home Assistant per gestire la pianificazione dei tecnici, visualizzare eventi e creare o modificare attività direttamente da Home Assistant.
 
 
 
-What the Add-on Does
+\## Cosa fa l’add-on
 
 
 
-Reads scheduled tasks from the CalendarioPianificazione report in Zoho Creator
+\- Legge le attività pianificate dal report CalendarioPianificazione di Zoho Creator  
 
+\- Crea sensori MQTT per ogni tecnico (stato, eventi, prossimo intervento)  
 
+\- Espone una dashboard web integrata in Home Assistant (Ingress) con timeline giornaliera  
 
-Creates MQTT sensors for each person (status, events, next job)
+\- Permette di creare, modificare ed eliminare eventi tramite API REST  
 
+\- Sincronizza automaticamente a intervalli configurabili  
 
 
-Provides a web dashboard integrated into Home Assistant (Ingress) with a daily timeline
 
+\## Requisiti
 
 
-Allows creating, editing, and deleting events via REST API
 
+\- Account Zoho con accesso a Zoho Creator  
 
+\- App Zoho Creator (es. service-management) con form Pianificazione  
 
-Automatically syncs at configurable intervals
+\- Credenziali OAuth2 Zoho (Client ID, Client Secret, Refresh Token)  
 
+\- Broker MQTT configurato in Home Assistant (es. Mosquitto add-on)
 
 
-Requirements
 
+\## Installazione
 
 
-Zoho account with access to Zoho Creator
 
+1\. Vai in Home Assistant → Impostazioni → Add-on → Store  
 
+2\. Apri il menu in alto a destra → Repository  
 
-Zoho Creator app (e.g. service-management) with a Pianificazione form
+3\. Aggiungi:  
 
+&nbsp;  https://github.com/eliaferrarii/ha-zoho-calendar  
 
+4\. Installa l’add-on Zoho Calendar  
 
-Zoho OAuth2 credentials (Client ID, Client Secret, Refresh Token)
+5\. Avvia l’add-on  
 
+6\. Apri l’interfaccia web dell’add-on dal pannello laterale
 
 
-MQTT broker configured in Home Assistant (e.g. Mosquitto add-on)
 
+\## Configurazione add-on
 
 
-Installation
 
+Le opzioni principali dell’add-on sono:
 
 
-Go to Home Assistant → Settings → Add-ons → Store
 
+update\_interval  
 
+Intervallo di aggiornamento in secondi (default 60)
 
-Open the menu at the top right → Repositories
 
 
+mqtt\_topic\_prefix  
 
-Add:
+Prefisso dei topic MQTT (default zoho\_calendar)
 
-https://github.com/eliaferrarii/ha-zoho-calendar
 
 
+La configurazione dettagliata di Zoho (client ID, secret, refresh token, nomi app, form, report, tecnici, ecc.) viene gestita dalla procedura guidata nell’interfaccia web dell’add-on.
 
-Install the Zoho Calendar add-on
 
 
+\## OAuth2 Zoho – Ottenere le credenziali
 
-Start the add-on
 
 
+1\. Vai su https://api-console.zoho.eu  
 
-Open the add-on web interface from the sidebar
+2\. Crea un nuovo client OAuth di tipo Server-based  
 
+3\. Imposta la Redirect URI a:  
 
+&nbsp;  http://localhost:3000/auth/callback  
 
-Add-on Configuration
+4\. Salva Client ID e Client Secret  
 
 
 
-Main options:
+\## Ottenere il refresh token tramite add-on
 
 
 
-update\_interval
+1\. Apri l’interfaccia dell’add-on  
 
-Update interval in seconds (default 60)
+2\. Vai alla sezione Autorizzazione  
 
+3\. Clicca Autorizza con Zoho  
 
+4\. Completa login e consenso  
 
-mqtt\_topic\_prefix
+5\. Copia il parametro code dalla URL di callback  
 
-MQTT topic prefix (default zoho\_calendar)
+6\. Incollalo nell’add-on e clicca Scambia codice  
 
+7\. Il refresh token viene salvato automaticamente  
 
 
-Detailed Zoho configuration (Client ID, Client Secret, Refresh Token, app names, forms, reports, technicians, etc.) is handled through the setup wizard in the add-on web interface.
 
-
-
-Zoho OAuth2 – Getting Credentials
-
-
-
-Go to https://api-console.zoho.eu
-
-
-
-Create a new OAuth client of type Server-based
-
-
-
-Set the Redirect URI to:
-
-http://localhost:3000/auth/callback
-
-
-
-Save the Client ID and Client Secret
-
-
-
-Getting the Refresh Token via the Add-on
-
-
-
-Open the add-on interface
-
-
-
-Go to the Authorization section
-
-
-
-Click Authorize with Zoho
-
-
-
-Complete login and consent
-
-
-
-Copy the code parameter from the callback URL
-
-
-
-Paste it into the add-on and click Exchange code
-
-
-
-The refresh token is saved automatically.
-
-
-
-Recommended Scopes
+\## Scope consigliati
 
 
 
@@ -166,231 +124,213 @@ ZohoCreator.report.READ,ZohoCreator.form.CREATE,ZohoCreator.report.UPDATE,ZohoCr
 
 
 
-Zoho Creator Data Structure
+\## Struttura dati Zoho Creator
 
 
 
-The add-on typically works with:
+L’add-on lavora tipicamente con:
 
 
 
-App: service-management
+App: service-management  
 
-Form: Pianificazione
+Form: Pianificazione  
 
-Report: CalendarioPianificazione
+Report: CalendarioPianificazione  
 
 
 
-Fields used (typical example):
+Campi usati (esempio tipico):
 
 
 
-ID
+ID  
 
+LkpTecnico.Nominativo  
 
+Titolo  
 
-LkpTecnico.Nominativo
+DescrizioneAttivita  
 
+Data  
 
+DataInizio  
 
-Titolo
+DataFine  
 
+Tipologia  
 
+OrePianificate  
 
-DescrizioneAttivita
+Reparto  
 
 
 
-Data
+Attenzione: il campo tecnico (lookup) richiede l’ID record Zoho del tecnico, non il nome.
 
 
 
-DataInizio
+\## Dashboard web
 
 
 
-DataFine
+Dal menu laterale di Home Assistant trovi la voce Zoho Calendario.
 
 
 
-Tipologia
+La dashboard mostra una timeline giornaliera con:
 
 
 
-OrePianificate
+\- Tutti i tecnici configurati  
 
+\- Eventi per fascia oraria  
 
+\- Stato occupato o libero  
 
-Reparto
 
 
+\## API REST dell’add-on
 
-Note: the person field (lookup) requires the Zoho record ID of the person, not the name.
 
 
+Accessibili tramite Ingress.
 
-Web Dashboard
 
 
+\## Eventi
 
-From the Home Assistant sidebar, you will find Zoho Calendario.
 
 
+GET /api/events → eventi di oggi  
 
-The dashboard shows a daily timeline with:
+GET /api/events/YYYY-MM-DD → eventi per data  
 
+POST /api/events → crea evento  
 
+PUT /api/events/{id} → aggiorna evento  
 
-All configured people
+DELETE /api/events/{id} → elimina evento  
 
 
 
-Events by time slot
+\## Tecnici
 
 
 
-Busy or free status
+GET /api/technicians → lista tecnici e stato  
 
 
 
-Add-on REST API
+\## Sistema
 
 
 
-Accessible via Ingress.
+POST /api/sync → forza sincronizzazione  
 
+GET /api/health → stato servizio  
 
 
-Events
 
-
-
-GET /api/events → today’s events
-
-GET /api/events/YYYY-MM-DD → events by date
-
-POST /api/events → create event
-
-PUT /api/events/{id} → update event
-
-DELETE /api/events/{id} → delete event
-
-
-
-People
-
-
-
-GET /api/technicians → list of people and status
-
-
-
-System
-
-
-
-POST /api/sync → force synchronization
-
-GET /api/health → service status
-
-
-
-Event Creation Example
+\## Esempio creazione evento
 
 
 
 {
 
-"titolo": "Server maintenance",
+&nbsp; "titolo": "Manutenzione server",
 
-"tecnico\_id": "123456789",
+&nbsp; "tecnico\_id": "123456789",
 
-"data": "2025-01-15",
+&nbsp; "data": "2025-01-15",
 
-"ora\_inizio": "09:00",
+&nbsp; "ora\_inizio": "09:00",
 
-"ora\_fine": "12:00",
+&nbsp; "ora\_fine": "12:00",
 
-"descrizione": "Scheduled maintenance"
+&nbsp; "descrizione": "Manutenzione programmata"
 
 }
 
 
 
-MQTT Sensors Created
+\## Sensori MQTT creati
 
 
 
-For each person:
+Per ogni tecnico:
 
 
 
-sensor.zoho\_calendar\_{name}\_next\_event
+sensor.zoho\_calendar\_{nome}\_prossimo\_evento  
+
+sensor.zoho\_calendar\_{nome}\_eventi\_oggi  
+
+sensor.zoho\_calendar\_{nome}\_stato  
+
+sensor.zoho\_calendar\_{nome}\_orario\_prossimo  
 
 
 
-sensor.zoho\_calendar\_{name}\_events\_today
+Sensori globali:
 
 
 
-sensor.zoho\_calendar\_{name}\_status
+sensor.zoho\_calendar\_eventi\_totali\_oggi  
+
+sensor.zoho\_calendar\_ultimo\_aggiornamento  
 
 
 
-sensor.zoho\_calendar\_{name}\_next\_time
+\## Integrazione custom senza MQTT
 
 
 
-Global sensors:
+Se vuoi sensori nativi in Home Assistant:
 
 
 
-sensor.zoho\_calendar\_total\_events\_today
+1\. Copia custom\_components/zoho\_calendar in  
+
+&nbsp;  config/custom\_components/zoho\_calendar  
+
+2\. Riavvia Home Assistant  
+
+3\. Aggiungi integrazione Zoho Calendar Add-on  
+
+4\. Inserisci il Base URL dell’add-on  
+
+&nbsp;  default: http://addon\_zoho-calendar:8099  
 
 
 
-sensor.zoho\_calendar\_last\_update
+\## Risoluzione problemi
 
 
 
-Troubleshooting
+Sensori non visibili  
 
-Sensors Not Visible
+\- Verifica che MQTT sia attivo  
 
+\- Controlla i log dell’add-on  
 
-
-Check that MQTT is running
-
-
-
-Check the add-on logs
+\- Attendi almeno un ciclo di aggiornamento  
 
 
 
-Wait at least one update cycle
+Errore refresh token non configurato  
+
+\- Completa la procedura OAuth  
+
+\- Inserisci correttamente il token  
 
 
 
-Error: Refresh Token Not Configured
+Errore invalid\_grant  
+
+\- Il refresh token è stato revocato  
+
+\- Rigeneralo tramite la procedura di autorizzazione  
 
 
-
-Complete the OAuth procedure
-
-
-
-Enter the token correctly
-
-
-
-Error: invalid\_grant
-
-
-
-The refresh token has been revoked
-
-
-
-Generate a new one through the authorization process
 
